@@ -48,7 +48,7 @@ def start():
 
 def main():
     while(True):
-        theme = get_settings()
+        theme = get_settings(None, 'pers', 'theme', 'get')
 
 if __name__ == '__main__':
     start()
