@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CedR - StartPage</title>
+    <link rel="stylesheet" href="start.css">
+</head>
+<body class="light-theme">
+    <!-- Фоновый градиент с анимацией -->
+    <div class="background-animation"></div>
+    
+    <!-- Левая часть с логотипом и слоганом -->
+    <div class="left-space">
+        <div class="logo">
+            <img class="logo-pic" src="./logo.png" alt="CedR">
+            <div class="logo-text">
+                Добро пожаловать, время творить пришло.
+            </div>
+        </div>
+        <div class="version-container" id="version">
+            версия приложения
+        </div>
+    </div>
+
+    <!-- Правая часть с проектами и кнопками -->
+    <div class="right-space">
+        <h1>Список проектов</h1>
+        
+        <!-- Список проектов -->
+        <ul class="projects-list">
+            <li class="project">
+                <h2 class="prj-title">Пример проекта для бэкенда</h2>
+                <div class="prj-actions">
+                    <button class="prj-action">редактировать</button>
+                    <button class="prj-action">удалить</button>
+                </div>
+            </li>
+        </ul>
+
+        <!-- Кнопки управления приложением -->
+        <ul class="app-buttons">
+            <li><button class="app-button" id="new-project-btn">новый проект</button></li>
+            <li><button class="app-button" id="settings-btn">настройки</button></li>
+            <li><button class="app-button" id="about-btn">о проекте</button></li>
+        </ul>
+    </div>
+
+    <!-- Модальное окно создания проекта -->
+    <div class="modal-overlay" id="modal-overlay" style="display: none;">
+        <div class="create-prj-window">
+            <h5>создайте проект</h5>
+            <div class="input-group">
+                <input type="text" name="prj-name" id="prj-name" class="project-name" placeholder="Название проекта">
+            </div>
+            <div class="input-group">
+                <textarea name="description" id="description" class="project-description" placeholder="Описание проекта" rows="4"></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="create-btn">создать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно настроек -->
+    <div class="modal-overlay" id="settings-overlay" style="display: none;">
+        <div class="settings-window">
+            <div class="settings-container">
+                <!-- Левая панель с вкладками -->
+                <div class="settings-tabs">
+                    <button class="tab-btn active" data-tab="personalization">Персонализация</button>
+                    <button class="tab-btn" data-tab="export">Параметры экспорта</button>
+                    <button class="tab-btn" data-tab="editor">Редактор</button>
+                    <button class="tab-btn" data-tab="scenario">Структура сценария</button>
+                    <button class="tab-btn" data-tab="about-version">О версии</button>
+                </div>
+
+                <!-- Правая панель с настройками -->
+                <div class="settings-content">
+                    <!-- Персонализация -->
+                    <div class="tab-content active" id="personalization">
+                        <h3>Персонализация</h3>
+                        <div class="setting-group">
+                            <label class="setting-label">Тема интерфейса</label>
+                            <select class="setting-select" id="theme-selector">
+                                <option value="light">Светлая</option>
+                                <option value="dark">Тёмная</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label class="setting-label">Размер шрифта редактора</label>
+                            <input type="range" class="setting-range" min="12" max="24" value="16">
+                            <span class="range-value">16px</span>
+                        </div>
+                    </div>
+
+                    <!-- Параметры экспорта -->
+                    <div class="tab-content" id="export">
+                        <h3>Параметры экспорта</h3>
+                        <div class="setting-group">
+                            <label class="setting-label">Формат сценария</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="format" value="european" checked>
+                                    Европейский (двухколоночный)
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="format" value="american">
+                                    Американский (стандартный)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="setting-group">
+                            <label class="setting-label">Скорость суфлёра (слов/мин)</label>
+                            <input type="number" class="setting-input" value="120" min="60" max="300">
+                        </div>
+                    </div>
+
+                    <!-- Редактор -->
+                    <div class="tab-content" id="editor">
+                        <h3>Редактор</h3>
+                        <div class="setting-group">
+                            <label class="setting-label">Автозавершение тегов</label>
+                            <label class="toggle-label">
+                                <input type="checkbox" class="toggle-input" checked>
+                                <span class="toggle-slider"></span>
+                                Включено
+                            </label>
+                        </div>
+                        <div class="setting-group">
+                            <label class="setting-label">Подсветка синтаксиса</label>
+                            <label class="toggle-label">
+                                <input type="checkbox" class="toggle-input" checked>
+                                <span class="toggle-slider"></span>
+                                Включено
+                            </label>
+                        </div>
+                        <div class="setting-group">
+                            <label class="setting-label">Автосохранение каждые</label>
+                            <select class="setting-select">
+                                <option>1 минуту</option>
+                                <option>3 минуты</option>
+                                <option selected>5 минут</option>
+                                <option>10 минут</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Структура сценария -->
+                    <div class="tab-content" id="scenario">
+                        <h3>Структура сценария</h3>
+                        <div class="setting-group">
+                            <label class="setting-label">Создавать основной контекст</label>
+                            <label class="toggle-label">
+                                <input type="checkbox" class="toggle-input" checked>
+                                <span class="toggle-slider"></span>
+                                Включено
+                            </label>
+                            <div class="setting-description">
+                                Автоматически создавать структуру сцены при добавлении нового элемента
+                            </div>
+                        </div>
+                        <div class="setting-group">
+                            <label class="setting-label">Элементы сценария</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" checked>
+                                    Сцена
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" checked>
+                                    Действие
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" checked>
+                                    Персонаж
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" checked>
+                                    Ремарка
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox">
+                                    Транзишн
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" checked>
+                                    Диалог
+                                </label>
+                            </div>
+                        </div>
+                        <div class="setting-group">
+                            <label class="setting-label">Автоматическая нумерация сцен</label>
+                            <label class="toggle-label">
+                                <input type="checkbox" class="toggle-input" checked>
+                                <span class="toggle-slider"></span>
+                                Включено
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- О версии -->
+                    <div class="tab-content" id="about-version">
+                        <h3>О версии</h3>
+                        <div class="version-info">
+                            <div class="version-number">CedR SceneWriter v2.1.4</div>
+                            <div class="build-date">Сборка от 31.10.2025</div>
+                        </div>
+                        <div class="changelog">
+                            <h4>Список изменений:</h4>
+                            <ul class="changes-list">
+                                <li class="change-item">
+                                    <span class="change-type new">NEW</span>
+                                    Добавлен двухколоночный европейский формат
+                                </li>
+                                <li class="change-item">
+                                    <span class="change-type fix">FIX</span>
+                                    Исправлена ошибка автосохранения при больших файлах
+                                </li>
+                                <li class="change-item">
+                                    <span class="change-type improve">IMPROVE</span>
+                                    Улучшена производительность редактора
+                                </li>
+                                <li class="change-item">
+                                    <span class="change-type new">NEW</span>
+                                    Добавлена функция "Основной контекст"
+                                </li>
+                                <li class="change-item">
+                                    <span class="change-type fix">FIX</span>
+                                    Исправлены проблемы с кодировкой при экспорте
+                                </li>
+                                <li class="change-item">
+                                    <span class="change-type improve">IMPROVE</span>
+                                    Обновлены шрифты интерфейса
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Кнопки действий -->
+            <div class="settings-actions-outer">
+                <button class="settings-save-btn">Сохранить настройки</button>
+                <button class="settings-cancel-btn">Отменить изменения</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно о проекте -->
+    <div class="modal-overlay" id="about-overlay" style="display: none;">
+        <div class="about-window">
+            <div class="about-header">
+                <h3>О проекте CedR</h3>
+                <div class="about-subtitle">Мечтать стоит каждому, а творить — тем более</div>
+            </div>
+            
+            <div class="about-content">
+                <div class="mission-text">
+                    <p class="mission-paragraph">
+                        Мы в <strong>2nd Age</strong> уверены, что финансовые обстоятельства не должны быть преградой на пути великого сценариста. Именно поэтому мы создали <strong>CedR</strong> — бесплатное и открытое приложение, которое превращает чистый лист в захватывающую историю.
+                    </p>
+                    
+                    <p class="mission-paragraph">
+                        CedR — это больше чем просто программа; это воплощение нашей веры в то, что мощный инструмент для творчества должен быть доступен всем. Мы стремимся стирать границы, доказывая, что «бесплатный» не значит «упрощенный». Это красивый, интуитивно понятный и профессиональный софт, в который мы вложили все основные функции, необходимые для кропотливой работы над сценарием. От форматирования по отраслевым стандартам до инструментов для организации структуры — здесь есть всё, чтобы ваши идеи обрели правильную форму без каких-либо компромиссов.
+                    </p>
+                    
+                    <p class="mission-paragraph">
+                        Но CedR — это не просто наш продукт. Это живое сообщество, проект <strong>FXD</strong>, который развивается и дышит благодаря вам. Ваш голос имеет значение. Мы приглашаем каждого творца стать частью этого движения: делиться идеями, давать советы, помогать нам расти и становиться лучше. Вместе мы можем создавать будущее, где прекрасные инструменты открыты для талантов любого материального положения.
+                    </p>
+                    
+                    <p class="mission-final">
+                        Давайте создавать следующую великую историю. <strong>Вместе.</strong>
+                    </p>
+                </div>
+                
+                <div class="about-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">🎭</div>
+                        <div class="feature-text">Профессиональное форматирование сценариев</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">💫</div>
+                        <div class="feature-text">Бесплатно и с открытым исходным кодом</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🌍</div>
+                        <div class="feature-text">Поддержка мировых стандартов</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">👥</div>
+                        <div class="feature-text">Сообщество творцов и новаторов</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="about-actions">
+                <button class="about-close-btn">Стать частью истории</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const version = 'build 2025.10.31'
+
+        // Открытие/закрытие модальных окон
+        const newProjectBtn = document.getElementById('new-project-btn');
+        const settingsBtn = document.getElementById('settings-btn');
+        const aboutBtn = document.getElementById('about-btn');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const settingsOverlay = document.getElementById('settings-overlay');
+        const aboutOverlay = document.getElementById('about-overlay');
+        const createBtn = document.querySelector('.create-btn');
+        const aboutCloseBtn = document.querySelector('.about-close-btn');
+
+        newProjectBtn.addEventListener('click', () => {
+            modalOverlay.style.display = 'flex';
+        });
+
+        settingsBtn.addEventListener('click', () => {
+            settingsOverlay.style.display = 'flex';
+        });
+
+        aboutBtn.addEventListener('click', () => {
+            aboutOverlay.style.display = 'flex';
+        });
+
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.style.display = 'none';
+            }
+        });
+
+        settingsOverlay.addEventListener('click', (e) => {
+            if (e.target === settingsOverlay) {
+                settingsOverlay.style.display = 'none';
+            }
+        });
+
+        aboutOverlay.addEventListener('click', (e) => {
+            if (e.target === aboutOverlay) {
+                aboutOverlay.style.display = 'none';
+            }
+        });
+
+        createBtn.addEventListener('click', () => {
+            modalOverlay.style.display = 'none';
+        });
+
+        aboutCloseBtn.addEventListener('click', () => {
+            aboutOverlay.style.display = 'none';
+        });
+
+        // Анимация фона при наведении на левую часть
+        const leftSpace = document.querySelector('.left-space');
+        const backgroundAnimation = document.querySelector('.background-animation');
+
+        leftSpace.addEventListener('mouseenter', () => {
+            backgroundAnimation.classList.add('active');
+        });
+
+        leftSpace.addEventListener('mouseleave', () => {
+            backgroundAnimation.classList.remove('active');
+        });
+
+        // Переключение вкладок настроек
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Убираем активный класс у всех кнопок и контента
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // Добавляем активный класс текущей кнопке
+                btn.classList.add('active');
+                
+                // Показываем соответствующий контент
+                const tabId = btn.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Обновление значения range
+        const rangeInput = document.querySelector('.setting-range');
+        const rangeValue = document.querySelector('.range-value');
+
+        if (rangeInput && rangeValue) {
+            rangeInput.addEventListener('input', () => {
+                rangeValue.textContent = `${rangeInput.value}px`;
+            });
+        }
+
+        // Смена темы
+        const themeSelector = document.getElementById('theme-selector');
+        
+        themeSelector.addEventListener('change', () => {
+            const selectedTheme = themeSelector.value;
+            document.body.className = selectedTheme + '-theme';
+        });
+
+        // Версия
+        const versionElement = document.getElementById('version')
+        versionElement.textContent = version
+    </script>
+</body>
+</html>

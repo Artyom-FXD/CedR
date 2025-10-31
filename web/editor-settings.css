@@ -1,0 +1,768 @@
+/* settings.css - Стили для модального окна настроек */
+.settings-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(20px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.settings-modal-overlay.active {
+    display: flex;
+}
+
+.settings-window {
+    background: var(--bg-panel);
+    border-radius: 20px;
+    width: 900px;
+    max-height: 85vh;
+    box-shadow: var(--shadow-large);
+    border: 1px solid var(--border-light);
+    animation: slideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-container {
+    display: flex;
+    flex: 1;
+    gap: 0;
+    min-height: 500px;
+}
+
+/* Левая панель с вкладками */
+.settings-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 250px;
+    flex-shrink: 0;
+    background: var(--bg-toolbar);
+    border-radius: 20px 0 0 0;
+    padding: 20px 0;
+}
+
+.settings-tab {
+    background: transparent;
+    color: var(--text-secondary);
+    border: none;
+    padding: 16px 24px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 15px;
+    position: relative;
+    border-right: 3px solid transparent;
+}
+
+.settings-tab:hover {
+    color: var(--accent-blue);
+    background: var(--bg-hover);
+    transform: translateX(5px);
+}
+
+.settings-tab.active {
+    color: var(--accent-blue);
+    background: var(--bg-selected);
+    border-right-color: var(--accent-blue);
+    font-weight: 500;
+}
+
+.settings-tab.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: var(--accent-blue);
+    border-radius: 0 2px 2px 0;
+}
+
+/* Правая панель с контентом */
+.settings-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px;
+}
+
+.settings-tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.settings-tab-content.active {
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-tab-content h3 {
+    font-size: 24px;
+    color: var(--text-primary);
+    margin-bottom: 25px;
+    font-weight: 600;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--border-light);
+}
+
+/* Группы настроек */
+.settings-group {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: var(--bg-element);
+    border-radius: 12px;
+    border: 1px solid var(--border-light);
+    transition: all 0.3s ease;
+}
+
+.settings-group:hover {
+    border-color: var(--border-medium);
+    box-shadow: var(--shadow-light);
+}
+
+.settings-label {
+    display: block;
+    font-size: 16px;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.settings-description {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+.settings-select,
+.settings-input,
+.settings-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--border-light);
+    border-radius: 8px;
+    font-size: 15px;
+    background: var(--bg-panel);
+    transition: all 0.3s ease;
+    font-family: 'Jost', sans-serif;
+    color: var(--text-primary);
+}
+
+.settings-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.settings-select:focus,
+.settings-input:focus,
+.settings-textarea:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Радио кнопки и чекбоксы */
+.settings-radio-group,
+.settings-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.settings-radio-label,
+.settings-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 8px 0;
+}
+
+.settings-radio-label:hover,
+.settings-checkbox-label:hover {
+    color: var(--accent-blue);
+}
+
+.settings-radio-label input,
+.settings-checkbox-label input {
+    width: 18px;
+    height: 18px;
+}
+
+/* Range слайдер */
+.settings-range {
+    width: 100%;
+    margin: 15px 0;
+}
+
+.settings-range-value {
+    display: inline-block;
+    margin-left: 15px;
+    font-size: 14px;
+    color: var(--accent-blue);
+    font-weight: 500;
+}
+
+/* Toggle переключатели */
+.settings-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-size: 15px;
+    color: var(--text-primary);
+}
+
+.settings-toggle-input {
+    display: none;
+}
+
+.settings-toggle-slider {
+    width: 50px;
+    height: 26px;
+    background: var(--border-light);
+    border-radius: 13px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.settings-toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.settings-toggle-input:checked + .settings-toggle-slider {
+    background: var(--accent-blue);
+}
+
+.settings-toggle-input:checked + .settings-toggle-slider::before {
+    transform: translateX(24px);
+}
+
+/* Кнопки действий */
+.settings-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    padding: 25px 30px;
+    border-top: 2px solid var(--border-light);
+    margin-top: auto;
+}
+
+.settings-save-btn,
+.settings-cancel-btn {
+    padding: 14px 35px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    font-weight: 500;
+    min-width: 160px;
+}
+
+.settings-save-btn {
+    background: transparent;
+    color: var(--accent-green);
+    border: 2px solid var(--accent-green);
+}
+
+.settings-save-btn:hover {
+    background: var(--accent-green);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.settings-cancel-btn {
+    background: transparent;
+    color: var(--accent-red);
+    border: 2px solid var(--accent-red);
+}
+
+.settings-cancel-btn:hover {
+    background: var(--accent-red);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+/* Стили для вкладки "О версии" */
+.settings-version-info {
+    background: var(--bg-element);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    border: 1px solid var(--border-light);
+}
+
+.settings-version-number {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--accent-blue);
+    margin-bottom: 5px;
+}
+
+.settings-build-date {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.settings-changelog {
+    background: var(--bg-element);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    border: 1px solid var(--border-light);
+}
+
+.settings-changelog h4 {
+    font-size: 18px;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.settings-changes-list {
+    list-style: none;
+    padding: 0;
+}
+
+.settings-change-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.settings-change-item:last-child {
+    border-bottom: none;
+}
+
+.settings-change-type {
+    padding: 3px 10px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.settings-change-type.new {
+    background: var(--accent-green);
+    color: white;
+}
+
+.settings-change-type.fix {
+    background: var(--accent-red);
+    color: white;
+}
+
+.settings-change-type.improve {
+    background: var(--accent-blue);
+    color: white;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { 
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to { 
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Скроллбары */
+.settings-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.settings-content::-webkit-scrollbar-track {
+    background: var(--border-light);
+    border-radius: 4px;
+}
+
+.settings-content::-webkit-scrollbar-thumb {
+    background: var(--border-medium);
+    border-radius: 4px;
+}
+
+.settings-content::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-blue);
+}
+
+/* Адаптивность */
+@media (max-width: 968px) {
+    .settings-window {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .settings-container {
+        flex-direction: column;
+    }
+    
+    .settings-tabs {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 15px;
+        border-radius: 20px 20px 0 0;
+    }
+    
+    .settings-tab {
+        white-space: nowrap;
+        border-right: none;
+        border-bottom: 3px solid transparent;
+        text-align: center;
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .settings-tab.active::before {
+        display: none;
+    }
+    
+    .settings-tab.active {
+        border-right-color: transparent;
+        border-bottom-color: var(--accent-blue);
+    }
+}
+
+@media (max-width: 768px) {
+    .settings-content {
+        padding: 20px;
+    }
+    
+    .settings-actions {
+        flex-direction: column;
+        padding: 20px;
+    }
+    
+    .settings-save-btn,
+    .settings-cancel-btn {
+        min-width: auto;
+        width: 100%;
+    }
+}
+
+/* Добавляем в settings.css */
+
+.settings-tab {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tab-icon {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+}
+
+.settings-save-btn,
+.settings-cancel-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-icon {
+    font-size: 16px;
+}
+
+/* Улучшаем внешний вид специальных возможностей */
+.settings-group strong {
+    color: var(--accent-blue);
+    font-weight: 600;
+}
+
+.settings-description {
+    line-height: 1.6;
+}
+/* Группы настроек */
+.setting-group {
+    margin-bottom: 25px;
+    padding: 20px;
+    background: var(--bg-card);
+    border-radius: 10px;
+    border: 1px solid var(--border-light);
+}
+
+.setting-label {
+    display: block;
+    font-size: 16px;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.setting-description {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    font-style: italic;
+}
+
+.setting-select,
+.setting-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid var(--border-light);
+    border-radius: 8px;
+    font-size: 15px;
+    background: var(--bg-card);
+    transition: all 0.3s ease;
+    font-family: 'Jost', sans-serif;
+    color: var(--text-primary);
+}
+
+.setting-select:focus,
+.setting-input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Радио кнопки и чекбоксы */
+.radio-group,
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.radio-label,
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.radio-label:hover,
+.checkbox-label:hover {
+    color: var(--accent-blue);
+}
+
+.radio-label input,
+.checkbox-label input {
+    width: 16px;
+    height: 16px;
+}
+
+/* Range слайдер */
+.setting-range {
+    width: 100%;
+    margin: 10px 0;
+}
+
+.range-value {
+    display: inline-block;
+    margin-left: 15px;
+    font-size: 14px;
+    color: var(--accent-blue);
+    font-weight: 500;
+}
+
+/* Toggle переключатели */
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-size: 15px;
+    color: var(--text-primary);
+}
+
+.toggle-input {
+    display: none;
+}
+
+.toggle-slider {
+    width: 50px;
+    height: 24px;
+    background: var(--border-light);
+    border-radius: 12px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-input:checked + .toggle-slider {
+    background: var(--accent-blue);
+}
+
+.toggle-input:checked + .toggle-slider::before {
+    transform: translateX(26px);
+}
+
+/* Кнопки действий - ВНЕШНИЕ */
+.settings-actions-outer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    padding: 25px 0 0 0;
+    border-top: 2px solid var(--border-light);
+    margin-top: auto;
+}
+
+.settings-save-btn,
+.settings-cancel-btn {
+    padding: 15px 35px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    min-width: 180px;
+}
+
+.settings-save-btn {
+    background: transparent;
+    color: var(--accent-green);
+    border: 2px solid var(--accent-green);
+}
+
+.settings-save-btn:hover {
+    background: var(--accent-green);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+.settings-cancel-btn {
+    background: transparent;
+    color: var(--accent-red);
+    border: 2px solid var(--accent-red);
+}
+
+.settings-cancel-btn:hover {
+    background: var(--accent-red);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+/* Стили для вкладки "О версии" */
+.version-info {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    border: 1px solid var(--border-light);
+}
+
+.version-number {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--accent-blue);
+    margin-bottom: 5px;
+}
+
+.build-date {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.changelog {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    border: 1px solid var(--border-light);
+}
+
+.changelog h4 {
+    font-size: 18px;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.changes-list {
+    list-style: none;
+    padding: 0;
+}
+
+.change-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.change-item:last-child {
+    border-bottom: none;
+}
+
+.change-type {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.change-type.new {
+    background: var(--accent-green);
+    color: white;
+}
+
+.change-type.fix {
+    background: var(--accent-red);
+    color: white;
+}
+
+.change-type.improve {
+    background: var(--accent-blue);
+    color: white;
+}
