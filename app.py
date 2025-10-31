@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import sys
 from server import CedRDesktopApp
+from settings_loader import *
 
 def start():
     try:
@@ -47,7 +48,7 @@ def start():
 
 def main():
     while(True):
-        pass
+        theme = get_settings()
 
 if __name__ == '__main__':
     start()
