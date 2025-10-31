@@ -1,0 +1,20 @@
+{
+    "personalisation": {
+        "theme": "light",
+        "editorFontSize": 16
+    },
+    "exportParameters": {
+        "format": "US",
+        "textSpeed": 120
+    },
+    "editor": {
+        "autosaves": 5
+    },
+    "structure": {
+        "createMainContext": true,
+        "sceneAutonumeration": true
+    },
+    "aboutVersion": {
+        "standart": "standart"
+    }
+}

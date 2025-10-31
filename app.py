@@ -8,7 +8,7 @@ from pathlib import Path
 import sys
 from server import CedRDesktopApp
 
-def main():
+def start():
     try:
         # Проверяем существование папки web
         if not Path('web').exists():
@@ -38,12 +38,16 @@ def main():
         # Запускаем приложение
         app = CedRDesktopApp()
         app.run()
-        
+        main()
     except KeyboardInterrupt:
         print("\n👋 Application stopped by user")
     except Exception as e:
         print(f"❌ Error: {str(e)}")
         input("Press Enter to exit...")
 
+def main():
+    while(True):
+        pass
+
 if __name__ == '__main__':
-    main()
+    start()
