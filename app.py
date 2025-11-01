@@ -8,6 +8,9 @@ from pathlib import Path
 import sys
 from server import CedRDesktopApp
 from settings_loader import *
+from cosmetic import *
+
+version = "2025.12.1"
 
 def start():
     try:

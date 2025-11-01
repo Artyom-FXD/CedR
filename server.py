@@ -114,3 +114,4 @@ class CedRDesktopApp:
         
         # Запускаем сервер
         self.app.run(port=5000, debug=False, host='127.0.0.1')
+
