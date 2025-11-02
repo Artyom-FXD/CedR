@@ -11,7 +11,7 @@
 /* СВЕТЛАЯ ТЕМА (по умолчанию) */
 .light-theme {
     --bg-primary: linear-gradient(135deg, #8b8b8b 0%, #5a5b5d 100%);
-    --bg-primary-hover: linear-gradient(135deg, #9aa092 0%, #6d7467 100%);
+    --bg-primary-hover: linear-gradient(135deg, #b4c2a1 0%, #5f7051 100%);
     --bg-secondary: linear-gradient(135deg, #e6e9f0 0%, #c8ccd8 100%);
     --bg-modal: linear-gradient(135deg, #e6e9f0cc 0%, #c8ccd8cb 100%);
     --bg-card: rgba(255, 255, 255, 0.9);
