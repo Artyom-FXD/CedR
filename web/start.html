@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CedR - StartPage</title>
     <link rel="stylesheet" href="start.css">
+    <link rel="shortcut icon" href="favicon.png">
 </head>
 
 <body class="light-theme">
@@ -86,7 +87,7 @@
                         </div>
                         <div class="setting-group">
                             <label class="setting-label">Размер шрифта редактора</label>
-                            <input type="range" class="setting-range" min="12" max="24" value="16">
+                            <input type="range" class="setting-range" id="editor-font-size" min="12" max="24" value="16">
                             <span class="range-value">16px</span>
                         </div>
                     </div>
@@ -109,7 +110,7 @@
                         </div>
                         <div class="setting-group">
                             <label class="setting-label">Скорость суфлёра (слов/мин)</label>
-                            <input type="number" class="setting-input" value="120" min="60" max="300">
+                            <input type="number" class="setting-input" id="text-speed" value="120" min="60" max="300">
                         </div>
                     </div>
 
@@ -118,7 +119,7 @@
                         <h3>Редактор</h3>
                         <div class="setting-group">
                             <label class="setting-label">Автосохранение каждые</label>
-                            <select class="setting-select">
+                            <select class="setting-select" id="auto-save-interval">
                                 <option>1 минуту</option>
                                 <option>3 минуты</option>
                                 <option selected>5 минут</option>
@@ -133,7 +134,7 @@
                         <div class="setting-group">
                             <label class="setting-label">Создавать основной контекст</label>
                             <label class="toggle-label">
-                                <input type="checkbox" class="toggle-input" checked>
+                                <input type="checkbox" class="toggle-input" id="create-main-context" checked>
                                 <span class="toggle-slider"></span>
                                 Включено
                             </label>
@@ -144,7 +145,7 @@
                         <div class="setting-group">
                             <label class="setting-label">Автоматическая нумерация сцен</label>
                             <label class="toggle-label">
-                                <input type="checkbox" class="toggle-input" checked>
+                                <input type="checkbox" class="toggle-input" id="scene-autonumeration" checked>
                                 <span class="toggle-slider"></span>
                                 Включено
                             </label>
@@ -193,8 +194,7 @@
 
             <!-- Кнопки действий -->
             <div class="settings-actions-outer">
-                <button class="settings-save-btn">Сохранить настройки</button>
-                <button class="settings-cancel-btn">Отменить изменения</button>
+                <button class="settings-save-btn" id="applySettx">Сохранить настройки</button>
             </div>
         </div>
     </div>
@@ -263,209 +263,7 @@
         </div>
     </div>
 
-    <script>
-        const version = 'build 2025.10.31'
-
-        // Открытие/закрытие модальных окон
-        const newProjectBtn = document.getElementById('new-project-btn');
-        const settingsBtn = document.getElementById('settings-btn');
-        const aboutBtn = document.getElementById('about-btn');
-        const modalOverlay = document.getElementById('modal-overlay');
-        const settingsOverlay = document.getElementById('settings-overlay');
-        const aboutOverlay = document.getElementById('about-overlay');
-        const createBtn = document.querySelector('.create-btn');
-        const aboutCloseBtn = document.querySelector('.about-close-btn');
-
-        newProjectBtn.addEventListener('click', () => {
-            modalOverlay.style.display = 'flex';
-        });
-
-        settingsBtn.addEventListener('click', () => {
-            settingsOverlay.style.display = 'flex';
-        });
-
-        aboutBtn.addEventListener('click', () => {
-            aboutOverlay.style.display = 'flex';
-        });
-
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) {
-                modalOverlay.style.display = 'none';
-            }
-        });
-
-        settingsOverlay.addEventListener('click', (e) => {
-            if (e.target === settingsOverlay) {
-                settingsOverlay.style.display = 'none';
-            }
-        });
-
-        aboutOverlay.addEventListener('click', (e) => {
-            if (e.target === aboutOverlay) {
-                aboutOverlay.style.display = 'none';
-            }
-        });
-
-        createBtn.addEventListener('click', () => {
-            modalOverlay.style.display = 'none';
-        });
-
-        aboutCloseBtn.addEventListener('click', () => {
-            aboutOverlay.style.display = 'none';
-        });
-
-        // Анимация фона при наведении на левую часть
-        const leftSpace = document.querySelector('.left-space');
-        const backgroundAnimation = document.querySelector('.background-animation');
-
-        leftSpace.addEventListener('mouseenter', () => {
-            backgroundAnimation.classList.add('active');
-        });
-
-        leftSpace.addEventListener('mouseleave', () => {
-            backgroundAnimation.classList.remove('active');
-        });
-
-        // Переключение вкладок настроек
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        const tabContents = document.querySelectorAll('.tab-content');
-
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Убираем активный класс у всех кнопок и контента
-                tabBtns.forEach(b => b.classList.remove('active'));
-                tabContents.forEach(c => c.classList.remove('active'));
-
-                // Добавляем активный класс текущей кнопке
-                btn.classList.add('active');
-
-                // Показываем соответствующий контент
-                const tabId = btn.getAttribute('data-tab');
-                document.getElementById(tabId).classList.add('active');
-            });
-        });
-
-        // Обновление значения range
-        const rangeInput = document.querySelector('.setting-range');
-        const rangeValue = document.querySelector('.range-value');
-
-        if (rangeInput && rangeValue) {
-            rangeInput.addEventListener('input', () => {
-                rangeValue.textContent = `${rangeInput.value}px`;
-            });
-        }
-
-        // Смена темы
-        const themeSelector = document.getElementById('theme-selector');
-
-        themeSelector.addEventListener('change', async () => {
-            const selectedTheme = themeSelector.value;
-            document.body.className = selectedTheme + '-theme';
-
-            await fetch('/api/settings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ theme: theme })
-            });
-        });
-
-        // ---------------Соединение с бэком--------------------
-        async function getVersion() {
-            try {
-                let resp = await fetch('/cosmetic/version');
-                let data = await resp.json();
-                return data.version;
-            } catch (error) {
-                console.error('Error getting version:', error);
-                return 'build 2025.10.31';
-            }
-        }
-
-        // Проекты
-        async function getProjects() {
-            try {
-                let resp = await fetch('/projects/get-projects-list');
-                let prjList = await resp.json();
-
-                const projectList = document.getElementById('projectList');
-                projectList.innerHTML = ''; // Очищаем список
-
-                if (prjList.length === 0) {
-                    projectList.innerHTML = '<li class="project"><h2 class="prj-title">Нет проектов</h2></li>';
-                    return;
-                }
-
-                prjList.forEach((prj) => {
-                    const project = document.createElement('li');
-                    project.classList.add('project');
-                    project.setAttribute('name', prj);
-
-                    const title = document.createElement('h2');
-                    title.textContent = prj;
-                    title.classList.add('prj-title');
-                    project.appendChild(title);
-
-                    const actions = document.createElement('div');
-                    actions.classList.add('prj-actions');
-
-                    const editBtn = document.createElement('button');
-                    editBtn.classList.add('prj-action');
-                    editBtn.textContent = 'редактировать';
-                    editBtn.onclick = () => window.location.href = '/editor?project=' + encodeURIComponent(prj);
-                    actions.appendChild(editBtn);
-
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.classList.add('prj-action');
-                    deleteBtn.textContent = 'удалить';
-                    actions.appendChild(deleteBtn);
-
-                    project.appendChild(actions);
-                    projectList.appendChild(project);
-                });
-            } catch (error) {
-                console.error('Error loading projects:', error);
-                const projectList = document.getElementById('projectList');
-                projectList.innerHTML = '<li class="project"><h2 class="prj-title">Ошибка загрузки проектов</h2></li>';
-            }
-        }
-
-        // Создание проекта
-        
-
-        async function main() {
-            // Версия
-            const versionElement = document.getElementById('version');
-            versionElement.textContent = await getVersion();
-
-            // Проекты
-            await getProjects();
-
-            // Обработчик создания проекта
-            const createBtn = document.querySelector('.create-btn');
-            const projectNameInput = document.getElementById('prj-name');
-            const projectDescInput = document.getElementById('description');
-
-            createBtn.addEventListener('click', async () => {
-                const name = projectNameInput.value.trim();
-                const description = projectDescInput.value.trim();
-
-                if (!name) {
-                    alert('Введите название проекта');
-                    return;
-                }
-
-                const success = await createProject(name, description);
-                if (success) {
-                    modalOverlay.style.display = 'none';
-                    projectNameInput.value = '';
-                    projectDescInput.value = '';
-                }
-            });
-        }
-
-        // Запускаем когда страница загрузится
-        document.addEventListener('DOMContentLoaded', main);
-    </script>
+    <script src="./start.js"></script>
 </body>
 
 </html>
