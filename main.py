@@ -6,14 +6,19 @@ import time
 import os
 import json
 from pathlib import Path
-from settings_loader import get_settings
-from examples import *
 
 app = Flask(__name__)
-CORS(app)  # Разрешаем запросы от фронтенда
+CORS(app)
 
 # Константы
-CEDR_VERSION = "2025.12.1"
+CEDR_VERSION = "версия: 2025.12.1"
+
+# Основной контекст по умолчанию
+main_context = {
+    "type": "context",
+    "title": "Основной контекст",
+    "content": "Здесь будет основной контент вашего проекта"
+}
 
 def ensure_directories():
     """Создаем необходимые папки если их нет"""
@@ -30,7 +35,7 @@ def load_settings():
             # Настройки по умолчанию
             default_settings = {
                 "personalisation": {"theme": "light", "editorFontSize": 16},
-                "exportParameters": {"format": "US", "textSpeed": 120},
+                "exportParameters": {"format": "american", "textSpeed": 120},
                 "editor": {"autosaves": 5},
                 "structure": {"createMainContext": True, "sceneAutonumeration": True}
             }
@@ -52,7 +57,7 @@ def save_settings(settings):
         return False
 
 def get_crs_files():
-    """Получение списка проектов"""
+    """Получение списка проектов с информацией о дате изменения"""
     try:
         if not os.path.exists("projects"):
             os.makedirs("projects", exist_ok=True)
@@ -61,10 +66,38 @@ def get_crs_files():
         files = []
         for item in os.listdir("projects"):
             if item.endswith('.crs'):
+                file_path = os.path.join("projects", item)
+                if not os.path.exists(file_path):
+                    continue
+                
                 # Убираем расширение .crs
                 name = item[:-4] if item.endswith('.crs') else item
-                files.append(name)
+                
+                # Получаем время последнего изменения файла
+                mtime = os.path.getmtime(file_path)
+                
+                # Также пытаемся получить дату создания из метаданных файла
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        project_data = json.load(f)
+                    created_at = project_data.get('created_at', '')
+                    updated_at = project_data.get('updated_at', '')
+                except:
+                    created_at = ''
+                    updated_at = ''
+                
+                files.append({
+                    'name': name,
+                    'mtime': mtime,
+                    'created_at': created_at,
+                    'updated_at': updated_at,
+                    'file_path': file_path
+                })
+        
+        # Сортируем по дате изменения (новые сверху)
+        files.sort(key=lambda x: x['mtime'], reverse=True)
         return files
+        
     except Exception as e:
         print(f"Error getting CRS files: {e}")
         return []
@@ -81,7 +114,6 @@ def editor():
 @app.route('/cosmetic/version', methods=['GET'])
 def get_version():
     return jsonify({"version": CEDR_VERSION})
-
 
 @app.route('/api/settings', methods=['GET', 'POST'])
 def handle_settings():
@@ -103,8 +135,36 @@ def handle_settings():
 @app.route('/projects/get-projects-list', methods=['GET'])
 def get_projects_list():
     try:
-        projects = get_crs_files()
-        return jsonify(projects)
+        projects_data = get_crs_files()
+        # Возвращаем только имена проектов для совместимости с фронтендом
+        project_names = [project['name'] for project in projects_data]
+        return jsonify(project_names)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/projects/get-projects-detailed', methods=['GET'])
+def get_projects_detailed():
+    """Получение списка проектов с подробной информацией включая даты"""
+    try:
+        projects_data = get_crs_files()
+        
+        # Форматируем даты для удобного отображения
+        formatted_projects = []
+        for project in projects_data:
+            # Преобразуем timestamp в читаемую дату
+            from datetime import datetime
+            mtime_dt = datetime.fromtimestamp(project['mtime'])
+            formatted_date = mtime_dt.strftime("%d.%m.%Y %H:%M")
+            
+            formatted_projects.append({
+                'name': project['name'],
+                'last_modified': formatted_date,
+                'created_at': project.get('created_at', ''),
+                'updated_at': project.get('updated_at', ''),
+                'timestamp': project['mtime']
+            })
+        
+        return jsonify(formatted_projects)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -112,31 +172,121 @@ def get_projects_list():
 def create_project():
     try:
         data = request.get_json()
-        project_name = data.get('name', 'Новый проект')
-        description = data.get('description', '')
+        project_name = data.get('name', 'Новый проект').strip()
+        description = data.get('description', '').strip()
+        
+        if not project_name:
+            return jsonify({"error": "Название проекта не может быть пустым"}), 400
+        
+        # Проверяем, не существует ли уже проект с таким именем
+        existing_projects = [p['name'] for p in get_crs_files()]
+        if project_name in existing_projects:
+            return jsonify({"error": "Проект с таким именем уже существует"}), 400
+        
+        # Загружаем настройки для проверки createMainContext
+        settings = load_settings()
+        create_main_context = settings.get('structure', {}).get('createMainContext', True)
+        
+        # Текущее время
+        current_time = time.strftime("%Y-%m-%d %H:%M:%S")
         
         # Создаем файл проекта
         project_data = {
             "name": project_name,
             "description": description,
             "content": [],
-            "settings": []
+            "settings": {},
+            "created_at": current_time,
+            "updated_at": current_time
         }
 
-        if get_settings('none', 'struct', 'context_mode', 'get'):
-            project_data.content.append(main_context)
+        # Добавляем основной контекст если включено в настройках
+        if create_main_context:
+            project_data["content"].append(main_context)
+        
+        # Создаем папку projects если её нет
+        os.makedirs('projects', exist_ok=True)
         
         filename = f"projects/{project_name}.crs"
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(project_data, f, indent=2, ensure_ascii=False)
         
+        print(f"Проект создан: {filename}")
+        
         return jsonify({
             "status": "success", 
             "message": "Проект создан",
-            "project": project_data
+            "project": project_name
         })
+        
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print(f"Ошибка при создании проекта: {str(e)}")
+        return jsonify({"error": f"Внутренняя ошибка сервера: {str(e)}"}), 500
+
+@app.route('/api/projects/delete-project', methods=['POST'])
+def delete_project():
+    try:
+        data = request.get_json()
+        project_name = data.get('name', '').strip()
+        
+        if not project_name:
+            return jsonify({"error": "Название проекта не может быть пустым"}), 400
+        
+        # Проверяем, существует ли проект
+        filename = f"projects/{project_name}.crs"
+        if not os.path.exists(filename):
+            return jsonify({"error": "Проект не найден"}), 404
+        
+        # Удаляем файл проекта
+        os.remove(filename)
+        
+        print(f"Проект удален: {filename}")
+        
+        return jsonify({
+            "status": "success", 
+            "message": "Проект удален"
+        })
+        
+    except Exception as e:
+        print(f"Ошибка при удалении проекта: {str(e)}")
+        return jsonify({"error": f"Внутренняя ошибка сервера: {str(e)}"}), 500
+
+#Обновление времени модификации проекта
+@app.route('/api/projects/update-project-timestamp', methods=['POST'])
+def update_project_timestamp():
+    try:
+        data = request.get_json()
+        project_name = data.get('name', '').strip()
+        
+        if not project_name:
+            return jsonify({"error": "Название проекта не может быть пустым"}), 400
+        
+        filename = f"projects/{project_name}.crs"
+        if not os.path.exists(filename):
+            return jsonify({"error": "Проект не найден"}), 404
+        
+        # Загружаем текущие данные проекта
+        with open(filename, 'r', encoding='utf-8') as f:
+            project_data = json.load(f)
+        
+        # Обновляем время модификации
+        project_data['updated_at'] = time.strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Сохраняем обратно
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(project_data, f, indent=2, ensure_ascii=False)
+        
+        # Также обновляем время файла системы
+        os.utime(filename, None)
+        
+        return jsonify({
+            "status": "success", 
+            "message": "Время обновлено"
+        })
+        
+    except Exception as e:
+        print(f"Ошибка при обновлении времени проекта: {str(e)}")
+        return jsonify({"error": f"Внутренняя ошибка сервера: {str(e)}"}), 500
 
 # Статические файлы
 @app.route('/<path:filename>')
