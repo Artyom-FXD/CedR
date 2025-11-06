@@ -1,386 +1,388 @@
-// editor.js - Дополнения для новой иерархии
+// editor.js - Визуальные взаимодействия и управление интерфейсом
+class EditorUI {
+    constructor() {
+        this.init();
+    }
 
-// В функцию createProjectElement добавляем логику для контекстов
-function createProjectElement(type) {
-    const hierarchySection = document.querySelector('.hierarchy-section:first-child');
-    
-    let item, icon, title, number;
-    
-    switch(type) {
-        case 'new-character':
-            // Создание персонажа (остаётся как было)
-            const characterSection = document.querySelector('.hierarchy-section:last-child');
-            item = document.createElement('div');
-            item.className = 'hierarchy-item character';
-            icon = '|@|';
-            title = 'Новый персонаж';
+    init() {
+        this.initSettingsModal();
+        this.initSettingsTabs();
+        this.initHierarchy();
+        this.initResizeHandles();
+        this.initModeSwitcher();
+        this.initKeyboardShortcuts();
+        this.updateStatistics();
+        
+        console.log('Editor UI initialized');
+    }
+
+    // 1. Управление модальным окном настроек
+    initSettingsModal() {
+        const openBtn = document.getElementById('openSettingsBtn');
+        const modal = document.getElementById('settings-modal');
+        const cancelBtn = document.querySelector('.settings-cancel-btn');
+        
+        if (openBtn && modal) {
+            openBtn.addEventListener('click', () => modal.classList.add('active'));
             
-            item.innerHTML = `
-                <div class="item-icon">${icon}</div>
-                <div class="item-content">
-                    <div class="item-title">${title}</div>
-                </div>
-            `;
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', () => modal.classList.remove('active'));
+            }
             
-            characterSection.appendChild(item);
-            break;
-            
-        case 'new-context':
-            // Создание контекста
-            item = document.createElement('div');
-            item.className = 'hierarchy-item context context-item';
-            icon = '|^|';
-            title = 'Новый контекст';
-            
-            // Получаем номер для нового контекста
-            const contexts = document.querySelectorAll('.hierarchy-item.context');
-            number = contexts.length + 1;
-            const contextId = `context-${Date.now()}`;
-            
-            item.innerHTML = `
-                <button class="collapse-toggle" data-context="${contextId}">
-                    <span class="toggle-icon">▼</span>
-                </button>
-                <div class="item-icon">${icon}</div>
-                <div class="item-content">
-                    <span class="context-number">${number}</span>
-                    <div class="item-title">${title}</div>
-                    <div class="item-subtitle">0 сцен • Нажмите для сворачивания</div>
-                </div>
-            `;
-            
-            // Создаем контейнер для дочерних сцен
-            const childrenContainer = document.createElement('div');
-            childrenContainer.className = 'context-children';
-            childrenContainer.id = contextId;
-            
-            hierarchySection.appendChild(item);
-            hierarchySection.appendChild(childrenContainer);
-            
-            // Инициализируем обработчик для новой кнопки сворачивания
-            initCollapseToggle(item.querySelector('.collapse-toggle'));
-            break;
-            
-        case 'new-scene':
-            // Создание сцены
-            item = document.createElement('div');
-            icon = '|A|';
-            title = 'Новая сцена';
-            
-            // Проверяем, есть ли выбранный контекст
-            const selectedContext = document.querySelector('.hierarchy-item.context.selected');
-            
-            if (selectedContext) {
-                // Создаём сцену внутри контекста
-                item.className = 'hierarchy-item scene scene-in-context';
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.remove('active');
+            });
+        }
+    }
+
+    // 2. Переключение вкладок настроек
+    initSettingsTabs() {
+        const tabs = document.querySelectorAll('.settings-tab');
+        const contents = document.querySelectorAll('.settings-tab-content');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
                 
-                // Находим контейнер дочерних элементов контекста
-                const contextId = selectedContext.querySelector('.collapse-toggle').getAttribute('data-context');
-                const contextChildren = document.getElementById(contextId);
+                // Обновляем активные элементы
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
                 
-                // Автоматически разворачиваем контекст, если он свернут
-                if (contextChildren.classList.contains('collapsed')) {
-                    contextChildren.classList.remove('collapsed');
-                    const toggle = selectedContext.querySelector('.collapse-toggle');
-                    toggle.classList.remove('collapsed');
-                    toggle.querySelector('.toggle-icon').style.transform = 'rotate(0deg)';
+                tab.classList.add('active');
+                const targetContent = document.getElementById(tabId);
+                if (targetContent) {
+                    targetContent.classList.add('active');
                 }
-                
-                // Получаем номер контекста и номер сцены внутри него
-                const contextNumber = selectedContext.querySelector('.context-number').textContent;
-                const scenesInContext = contextChildren.querySelectorAll('.scene-in-context');
-                const sceneNumber = scenesInContext.length + 1;
-                
-                item.innerHTML = `
-                    <div class="item-icon">${icon}</div>
-                    <div class="item-content">
-                        <span class="scene-number">${contextNumber}.${sceneNumber}</span>
-                        <div class="item-title">${title}</div>
-                        <div class="item-subtitle">0 действий</div>
-                    </div>
-                `;
-                
-                // Вставляем в контейнер дочерних элементов
-                contextChildren.appendChild(item);
-                
-                // Обновляем счетчик сцен в контексте
-                updateContextSceneCount(selectedContext, scenesInContext.length + 1);
-            } else {
-                // Создаём независимую сцену
-                item.className = 'hierarchy-item scene';
-                
-                // Получаем номер для новой сцены
-                const allScenes = document.querySelectorAll('.hierarchy-item.scene:not(.scene-in-context)');
-                const independentScenes = Array.from(allScenes).filter(scene => !scene.classList.contains('scene-in-context'));
-                number = independentScenes.length + 1;
-                
-                item.innerHTML = `
-                    <div class="item-icon">${icon}</div>
-                    <div class="item-content">
-                        <span class="scene-number">${number}</span>
-                        <div class="item-title">${title}</div>
-                        <div class="item-subtitle">0 действий</div>
-                    </div>
-                `;
-                
-                hierarchySection.appendChild(item);
-            }
-            break;
+            });
+        });
     }
-    
-    if (item) {
-        // Анимация появления
-        item.style.opacity = '0';
-        item.style.transform = 'translateX(-20px)';
-        
-        setTimeout(() => {
-            item.style.transition = 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-            item.style.opacity = '1';
-            item.style.transform = 'translateX(0)';
-        }, 10);
-        
-        // Инициализируем обработчики для нового элемента
-        initHierarchyItem(item);
-        
-        // Показываем уведомление
-        showNotification(`Создан новый элемент: ${title}`);
-        
-        // Обновляем статистику
-        updateStats();
-    }
-    
-    return item;
-}
 
-// Обновляем функцию initHierarchy для работы с новой структурой
-function initHierarchy() {
-    const hierarchyItems = document.querySelectorAll('.hierarchy-item');
-    const panelActions = document.querySelectorAll('.panel-action-btn');
-    const collapseToggles = document.querySelectorAll('.collapse-toggle');
-    
-    // Обработка выбора элементов иерархии
-    hierarchyItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            // Не снимаем выделение с контекста при клике на сцену внутри него
-            if (!this.classList.contains('scene-in-context') || e.ctrlKey) {
-                // Снимаем выделение со всех элементов
+    // 3. Управление иерархией проекта
+    initHierarchy() {
+        // Сворачивание/разворачивание контекстов
+        const collapseToggles = document.querySelectorAll('.collapse-toggle');
+        
+        collapseToggles.forEach(toggle => {
+            toggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const contextId = toggle.getAttribute('data-context');
+                const children = document.getElementById(contextId);
+                const contextItem = toggle.closest('.context-item');
+                
+                if (children) {
+                    children.classList.toggle('collapsed');
+                    toggle.classList.toggle('collapsed');
+                    contextItem.classList.toggle('collapsed');
+                    
+                    // Анимируем иконку
+                    const icon = toggle.querySelector('.toggle-icon');
+                    if (icon) {
+                        icon.style.transform = children.classList.contains('collapsed') 
+                            ? 'rotate(-90deg)' 
+                            : 'rotate(0deg)';
+                    }
+                }
+            });
+        });
+        
+        // Выбор элементов иерархии
+        const hierarchyItems = document.querySelectorAll('.hierarchy-item');
+        hierarchyItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                // Не срабатывает при клике на кнопку сворачивания
+                if (e.target.closest('.collapse-toggle')) return;
+                
                 hierarchyItems.forEach(i => i.classList.remove('selected'));
-            }
-            
-            // Выделяем текущий элемент
-            this.classList.add('selected');
-            
-            // Для контекста - подсвечиваем все сцены внутри
-            if (this.classList.contains('context')) {
-                const scenesInContext = this.parentElement.querySelectorAll('.scene-in-context');
-                scenesInContext.forEach(scene => {
-                    scene.style.background = 'rgba(16, 185, 129, 0.1)';
+                item.classList.add('selected');
+                
+                // Загружаем контент элемента
+                this.loadElementContent(item);
+            });
+        });
+
+        // Кнопки создания элементов
+        this.initCreationButtons();
+    }
+
+    // Кнопки создания новых элементов
+    initCreationButtons() {
+        const createButtons = {
+            'createCharacter': 'character',
+            'createContext': 'context', 
+            'createScene': 'scene'
+        };
+
+        Object.keys(createButtons).forEach(btnId => {
+            const btn = document.getElementById(btnId);
+            if (btn) {
+                btn.addEventListener('click', () => {
+                    this.createNewElement(createButtons[btnId]);
                 });
             }
-            
-            // Обновляем свойства в правой панели
-            updateProperties(this);
         });
-    });
-    
-    // Обработка кнопок создания элементов
-    panelActions.forEach(button => {
-        button.addEventListener('click', function() {
-            const action = this.getAttribute('data-action');
-            createProjectElement(action);
-            
-            // Анимация нажатия кнопки
-            this.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                this.style.transform = '';
-            }, 150);
-        });
-    });
+    }
 
-    collapseToggles.forEach(toggle => {
-        toggle.addEventListener('click', function(e) {
-            e.stopPropagation(); // Предотвращаем всплытие, чтобы не срабатывал выбор элемента
+    // 4. Система перетаскивания и ресайза
+    initResizeHandles() {
+        const resizeHandles = document.querySelectorAll('.resize-handle');
+        
+        resizeHandles.forEach(handle => {
+            handle.addEventListener('mousedown', this.startResize.bind(this));
+        });
+    }
+
+    startResize(e) {
+        e.preventDefault();
+        const panel = e.target.closest('.panel');
+        const isLeftPanel = panel.classList.contains('left-panel');
+        const startX = e.clientX;
+        const startWidth = parseInt(getComputedStyle(panel).width);
+        
+        function resize(moveEvent) {
+            const deltaX = moveEvent.clientX - startX;
+            let newWidth = startWidth + (isLeftPanel ? deltaX : -deltaX);
             
-            const contextId = this.getAttribute('data-context');
-            const contextChildren = document.getElementById(contextId);
-            const contextItem = this.closest('.context-item');
+            // Ограничения по размерам
+            newWidth = Math.max(200, Math.min(500, newWidth));
+            panel.style.width = `${newWidth}px`;
             
-            if (contextChildren) {
-                contextChildren.classList.toggle('collapsed');
-                this.classList.toggle('collapsed');
+            // Обновляем layout
+            document.dispatchEvent(new CustomEvent('layoutChanged'));
+        }
+        
+        function stopResize() {
+            document.removeEventListener('mousemove', resize);
+            document.removeEventListener('mouseup', stopResize);
+            document.body.style.cursor = '';
+        }
+        
+        document.addEventListener('mousemove', resize);
+        document.addEventListener('mouseup', stopResize);
+        document.body.style.cursor = 'col-resize';
+    }
+
+    // 5. Переключение режимов редактор/суфлёр
+    initModeSwitcher() {
+        const modeButtons = document.querySelectorAll('.header-button[data-mode]');
+        
+        modeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const mode = btn.getAttribute('data-mode');
                 
-                // Анимация переворота иконки
-                const toggleIcon = this.querySelector('.toggle-icon');
-                toggleIcon.style.transform = contextChildren.classList.contains('collapsed') 
-                    ? 'rotate(-90deg)' 
-                    : 'rotate(0deg)';
+                modeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
                 
-                // Обновляем подзаголовок
-                const subtitle = contextItem.querySelector('.item-subtitle');
-                if (contextChildren.classList.contains('collapsed')) {
-                    subtitle.textContent = `${getSceneCount(contextChildren)} сцен • Развернуть`;
-                } else {
-                    subtitle.textContent = `${getSceneCount(contextChildren)} сцен • Нажмите для сворачивания`;
-                }
+                this.switchMode(mode);
+            });
+        });
+    }
+
+    switchMode(mode) {
+        const centerArea = document.querySelector('.center-area');
+        const editorContainer = document.querySelector('.editor-container');
+        
+        if (mode === 'prompter') {
+            centerArea.classList.add('prompter-mode');
+            this.initPrompterMode();
+        } else {
+            centerArea.classList.remove('prompter-mode');
+            // Возврат к обычному редактору
+        }
+    }
+
+    initPrompterMode() {
+        // Реализация режима суфлёра
+        console.log('Prompter mode activated');
+        // Здесь будет логика для режима суфлёра
+    }
+
+    // 6. Горячие клавиши для навигации
+    initKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+Shift+S - настройки
+            if (e.ctrlKey && e.shiftKey && e.key === 'S') {
+                e.preventDefault();
+                document.getElementById('settings-modal')?.classList.add('active');
+            }
+            
+            // Escape - закрыть модалки
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.settings-modal-overlay.active').forEach(modal => {
+                    modal.classList.remove('active');
+                });
             }
         });
-    });
-}
+    }
 
-function getSceneCount(contextElement) {
-    return contextElement.querySelectorAll('.scene-in-context').length;
-}
-
-function initCollapseToggle(toggle) {
-    toggle.addEventListener('click', function(e) {
-        e.stopPropagation();
+    // 7. Обновление статистики
+    updateStatistics() {
+        const sceneContent = document.querySelector('.scene-content');
+        const elements = sceneContent ? sceneContent.querySelectorAll('.scene-element') : [];
         
-        const contextId = this.getAttribute('data-context');
-        const contextChildren = document.getElementById(contextId);
-        const contextItem = this.closest('.context-item');
+        const stats = {
+            characters: this.countCharacters(),
+            actions: elements.length,
+            scenes: document.querySelectorAll('.hierarchy-item.scene').length,
+            contexts: document.querySelectorAll('.hierarchy-item.context').length
+        };
         
-        if (contextChildren) {
-            contextChildren.classList.toggle('collapsed');
-            this.classList.toggle('collapsed');
-            
-            // Анимация переворота иконки
-            const toggleIcon = this.querySelector('.toggle-icon');
-            toggleIcon.style.transform = contextChildren.classList.contains('collapsed') 
-                ? 'rotate(-90deg)' 
-                : 'rotate(0deg)';
-            
-            // Обновляем подзаголовок
-            updateContextSubtitle(contextItem);
+        // Обновляем UI статистики
+        document.querySelectorAll('.stat-item').forEach((statItem, index) => {
+            const statValue = statItem.querySelector('.stat-value');
+            const values = Object.values(stats);
+            if (statValue && values[index] !== undefined) {
+                statValue.textContent = values[index];
+            }
+        });
+    }
+
+    countCharacters() {
+        // Простая реализация подсчета символов
+        const sceneContent = document.querySelector('.scene-content');
+        if (!sceneContent) return 0;
+        
+        let totalChars = 0;
+        sceneContent.querySelectorAll('.element-content').forEach(element => {
+            totalChars += element.textContent.length;
+        });
+        return totalChars;
+    }
+
+    // 8. Загрузка контента элемента
+    loadElementContent(element) {
+        const elementType = Array.from(element.classList).find(cls => 
+            ['character', 'context', 'scene'].includes(cls));
+        
+        if (!elementType) return;
+        
+        // Обновляем заголовок
+        const titleElement = document.querySelector('.current-element-path');
+        if (titleElement) {
+            const itemTitle = element.querySelector('.item-title');
+            titleElement.textContent = itemTitle ? itemTitle.textContent : 'Неизвестный элемент';
         }
-    });
+        
+        // Загружаем свойства в правую панель
+        this.loadElementProperties(element, elementType);
+        
+        // Для сцен загружаем контент в редактор
+        if (elementType === 'scene') {
+            this.loadSceneContent(element);
+        }
+    }
+
+    // 9. Загрузка свойств элемента
+    loadElementProperties(element, type) {
+        // Здесь будет загрузка свойств из данных элемента
+        console.log(`Loading properties for ${type}`, element);
+        
+        // Временная реализация - можно расширить
+        const titleElement = element.querySelector('.item-title');
+        if (titleElement) {
+            const titleInput = document.querySelector('.property-input[type="text"]');
+            if (titleInput) {
+                titleInput.value = titleElement.textContent;
+            }
+        }
+    }
+
+    // 10. Загрузка контента сцены
+    loadSceneContent(sceneElement) {
+        // Здесь будет загрузка контента сцены из данных
+        console.log('Loading scene content', sceneElement);
+    }
+
+    // 11. Создание нового элемента
+    createNewElement(type) {
+        const newElement = {
+            character: this.createCharacter(),
+            context: this.createContext(),
+            scene: this.createScene()
+        }[type];
+        
+        if (newElement) {
+            // Добавляем в иерархию
+            this.addToHierarchy(newElement, type);
+            this.updateStatistics();
+        }
+    }
+
+    createCharacter() {
+        return {
+            type: 'character',
+            name: 'Новый персонаж',
+            description: 'Описание персонажа',
+            colors: ['#3b82f6', '#60a5fa', '#93c5fd']
+        };
+    }
+
+    createContext() {
+        return {
+            type: 'context', 
+            title: 'Новый контекст',
+            description: 'Описание контекста',
+            scenes: []
+        };
+    }
+
+    createScene() {
+        return {
+            type: 'scene',
+            title: 'Новая сцена', 
+            description: 'Описание сцены',
+            content: []
+        };
+    }
+
+    addToHierarchy(element, type) {
+        // Временная реализация - можно улучшить
+        console.log('Adding to hierarchy:', element, type);
+    }
+
+    // Вспомогательная функция для debounce
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
 }
 
+// Инициализация при загрузке документа
+document.addEventListener('DOMContentLoaded', function() {
+    window.editorUI = new EditorUI();
+    
+    // Загрузка проекта из URL параметров
+    loadProjectFromURL();
+});
 
-// Добавляем CSS для анимаций сворачивания
-const collapseStyles = document.createElement('style');
-collapseStyles.textContent = `
-    .context-children {
-        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        overflow: hidden;
-    }
+// Загрузка проекта из URL
+async function loadProjectFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectName = urlParams.get('project');
     
-    .context-children:not(.collapsed) {
-        animation: slideDown 0.3s ease-out;
-    }
-    
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            max-height: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            max-height: 1000px;
-            transform: translateY(0);
+    if (projectName) {
+        try {
+            const response = await fetch(`/api/projects/load?name=${encodeURIComponent(projectName)}`);
+            if (response.ok) {
+                const projectData = await response.json();
+                renderProject(projectData);
+            } else {
+                console.error('Ошибка загрузки проекта:', response.status);
+            }
+        } catch (error) {
+            console.error('Ошибка загрузки проекта:', error);
         }
     }
-    
-    .context-children.collapsed {
-        display: none;
-    }
-    
-    .collapse-toggle {
-        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-    
-    .collapse-toggle .toggle-icon {
-        transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-    
-    /* Улучшенные стили для вложенных сцен */
-    .scene-in-context {
-        transition: all 0.3s ease;
-    }
-    
-    .context-children:not(.collapsed) .scene-in-context {
-        animation: fadeInUp 0.4s ease-out;
-    }
-    
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-`;
-document.head.appendChild(collapseStyles);
+}
 
-// Добавляем CSS для новых классов
-const hierarchyStyles = document.createElement('style');
-hierarchyStyles.textContent = `
-    .hierarchy-item.context-item {
-        border-left: 3px solid var(--accent-green);
-        margin-bottom: 8px;
-    }
-    
-    .hierarchy-item.scene-in-context {
-        background: rgba(16, 185, 129, 0.05);
-        border-left: 2px solid var(--accent-purple);
-        margin-left: 20px;
-        margin-bottom: 4px;
-        transform-origin: left center;
-    }
-    
-    .hierarchy-item.scene-in-context:hover {
-        background: rgba(16, 185, 129, 0.1);
-        transform: translateX(8px) translateY(-2px);
-    }
-    
-    .hierarchy-item.context.selected {
-        box-shadow: var(--glow-green);
-    }
-    
-    .scene-number, .context-number {
-        font-size: 10px;
-        font-weight: 700;
-        padding: 3px 6px;
-        border-radius: 6px;
-        margin-right: 8px;
-    }
-    
-    .scene-number {
-        background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
-    }
-    
-    .context-number {
-        background: linear-gradient(135deg, var(--accent-green), #059669);
-    }
-    
-    /* Эффекты для всех кнопок в стиле start */
-    .header-button:active::after,
-    .panel-action-btn:active::after,
-    .toolbar-btn:active::after {
-        content: '';
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        right: 2px;
-        bottom: 2px;
-        border-radius: inherit;
-        background: rgba(0, 0, 0, 0.1);
-    }
-    
-    /* Улучшенные transition */
-    .panel {
-        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-    
-    .hierarchy-item {
-        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-    
-    .scene-element {
-        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-`;
-document.head.appendChild(hierarchyStyles);
+// Рендер проекта (заглушка - будет расширена)
+function renderProject(projectData) {
+    console.log('Rendering project:', projectData);
+    // Здесь будет логика отображения проекта в интерфейсе
+}

@@ -33,11 +33,9 @@
                 <div class="panel-header">
                     <h3 class="panel-title">Структура проекта</h3>
                     <div class="panel-actions">
-                        <button class="panel-action-btn" data-action="new-character"
-                            title="Добавить персонажа">|@|</button>
-                        <button class="panel-action-btn" data-action="new-context"
-                            title="Добавить контекст">|^|</button>
-                        <button class="panel-action-btn" data-action="new-scene" title="Добавить сцену">|A|</button>
+                        <button class="panel-action-btn" id="createCharacter" title="Добавить персонажа">|@|</button>
+                        <button class="panel-action-btn" id="createContext" title="Добавить контекст">|^|</button>
+                        <button class="panel-action-btn" id="createScene" title="Добавить сцену">|A|</button>
                     </div>
                 </div>
                 <!-- В левой панели заменяем project-hierarchy на этот код -->
@@ -75,7 +73,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="hierarchy-section">
                             <div class="section-title">Структура сценария</div>
 
@@ -488,7 +486,7 @@
                             <label class="settings-label">Формат сценария</label>
                             <div class="settings-radio-group">
                                 <label class="settings-radio-label">
-                                    <input type="radio" name="export-format" value="european" >
+                                    <input type="radio" name="export-format" value="european">
                                     Европейский (двухколоночный)
                                 </label>
                                 <label class="settings-radio-label">
@@ -556,7 +554,8 @@
                         <div class="settings-group">
                             <label class="settings-label">Создавать основной контекст</label>
                             <label class="settings-toggle-label">
-                                <input type="checkbox" class="settings-toggle-input" id="main-context-toggle" checked disabled>
+                                <input type="checkbox" class="settings-toggle-input" id="main-context-toggle" checked
+                                    disabled>
                                 <span class="settings-toggle-slider"></span>
                                 Включено
                             </label>
@@ -676,7 +675,8 @@
     </div>
 
     <script src="editor.js"></script>
-    <script src="editor-settings.js"></script>
+    <!-- <script src="editor-settings.js"></script> -->
+    <script src="editor-edit.js"></script>
 </body>
 
 </html>
