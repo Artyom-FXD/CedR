@@ -610,6 +610,42 @@ document.head.appendChild(style);
 document.addEventListener('DOMContentLoaded', function() {
     initProjectCreation();
 });
+// Обработчик кнопки редактировать
+function initProjectActions() {
+    document.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('prj-action') && 
+            e.target.textContent === 'редактировать') {
+            
+            const projectElement = e.target.closest('.project');
+            const projectName = projectElement.getAttribute('name');
+            
+            try {
+                // Открываем проект через API
+                const response = await fetch('/api/projects/open', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: projectName })
+                });
+                
+                const result = await response.json();
+                if (result.status === 'success') {
+                    // Перенаправляем в редактор
+                    window.location.href = result.redirect;
+                } else {
+                    showNotification('Ошибка открытия проекта', 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showNotification('Ошибка открытия проекта', 'error');
+            }
+        }
+    });
+}
+
+// Инициализируем при загрузке
+document.addEventListener('DOMContentLoaded', () => {
+    initProjectActions();
+});
 
 async function main() {
     // Версия
