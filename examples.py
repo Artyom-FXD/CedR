@@ -1,38 +1,37 @@
-main_context = [
-    'context', #type
-    'main', #name
-    'desc', #desc
-    [
-        [
-            'scene', #type
-            'start', #name
-            'desc', #desc
-            ['#000', '#000', '#000'], #colors
-            [] #content
-        ] #start scene 
-    ] #content
-]
+main_context = {
+    "type": "context",
+    "name": "main", 
+    "description": "desc",
+    "content": [
+        {
+            "type": "scene", 
+            "name": "start",
+            "description": "desc",
+            "colors": ["#000", "#000", "#000"],
+            "content": []
+        }
+    ]    
+}
 
-context = [
-    'context', #type
-    'main', #name
-    'desc', #desc
-    [] #content
-]
+context = {
+    "type": "context",
+    "name": "main", 
+    "description": "desc",
+    "content": []
+}
 
-scene = [
-    'scene', #type
-    'start', #name
-    'desc', #desc
-    ['#000', '#000', '#000'], #colors
-    [] #content
-]
+scene = {
+    "type": "scene", 
+    "name": "start",
+    "description": "desc",
+    "colors": ["#000", "#000", "#000"],
+    "content": []
+}
 
-character = [
-    'character', #type
-    'Start Startovich', #name
-    'desc', #desc
-    ['#000', '#000', '#000'], #colors
-    'male' #gender
-]
-
+character = {
+    "type": "character",
+    "name": "Start Startovich", 
+    "description": "desc",
+    "colors": ["#000", "#000", "#000"],
+    "gender": "male"
+}
