@@ -7,6 +7,7 @@
     <title>Editor - CedR</title>
     <link rel="stylesheet" href="editor.css">
     <link rel="stylesheet" href="editor-settings.css">
+    <link rel="shortcut icon" href="favicon.png">
 </head>
 
 <body class="light-theme">
@@ -361,79 +362,58 @@
         </div>
     </div>
     <!-- settings-modal.html -->
-    <div class="settings-modal-overlay" id="settings-modal">
+    <div class="modal-overlay" id="settings-overlay" style="display: none;">
         <div class="settings-window">
             <div class="settings-container">
                 <!-- Левая панель с вкладками -->
                 <div class="settings-tabs">
-                    <button class="settings-tab active" data-tab="project-settings">
-                        <span class="tab-icon">📋</span>
-                        Настройки проекта
-                    </button>
-                    <button class="settings-tab" data-tab="special-features">
-                        <span class="tab-icon">⚡</span>
-                        Специальные возможности
-                    </button>
-                    <button class="settings-tab" data-tab="personalization">
-                        <span class="tab-icon">🎨</span>
-                        Персонализация
-                    </button>
-                    <button class="settings-tab" data-tab="export">
-                        <span class="tab-icon">📤</span>
-                        Параметры экспорта
-                    </button>
-                    <button class="settings-tab" data-tab="editor">
-                        <span class="tab-icon">✏️</span>
-                        Редактор
-                    </button>
-                    <button class="settings-tab" data-tab="scenario">
-                        <span class="tab-icon">🎭</span>
-                        Структура сценария
-                    </button>
-                    <button class="settings-tab" data-tab="about-version">
-                        <span class="tab-icon">ℹ️</span>
-                        О версии
-                    </button>
+                    <button class="tab-btn active" data-tab="project-settings">Настройки проекта</button>
+                    <button class="tab-btn" data-tab="addons">Аддоны</button>
+                    <button class="tab-btn" data-tab="personalization">Персонализация</button>
+                    <button class="tab-btn" data-tab="export">Параметры экспорта</button>
+                    <button class="tab-btn" data-tab="editor">Редактор</button>
+                    <button class="tab-btn" data-tab="scenario">Структура сценария</button>
+                    <button class="tab-btn" data-tab="about-version">О версии</button>
                 </div>
 
-                <!-- Правая панель с контентом -->
+                <!-- Правая панель с настройками -->
                 <div class="settings-content">
                     <!-- Настройки проекта -->
-                    <div class="settings-tab-content active" id="project-settings">
+                    <div class="tab-content active" id="project-settings">
                         <h3>Настройки проекта</h3>
 
-                        <div class="settings-group">
-                            <label class="settings-label">Название проекта</label>
-                            <input type="text" class="settings-input" id="project-name"
+                        <div class="setting-group">
+                            <label class="setting-label">Название проекта</label>
+                            <input type="text" class="text-field" id="project-name"
                                 placeholder="Введите название проекта" value="Мой первый сценарий">
                             <div class="settings-description">
                                 Основное название вашего сценария, которое будет отображаться в интерфейсе
                             </div>
                         </div>
 
-                        <div class="settings-group">
-                            <label class="settings-label">Описание проекта</label>
-                            <textarea class="settings-textarea" id="project-description"
+                        <div class="setting-group">
+                            <label class="setting-label">Описание проекта</label>
+                            <textarea class="text-field" id="project-description"
                                 placeholder="Опишите ваш проект...">Встреча двух старых друзей в уютном городском кафе. Вечер, за окном идёт дождь.</textarea>
                             <div class="settings-description">
                                 Краткое описание сценария, его концепции и основных идей
                             </div>
                         </div>
 
-                        <div class="settings-group">
-                            <label class="settings-label">Автор</label>
-                            <input type="text" class="settings-input" id="project-author" placeholder="Ваше имя">
+                        <div class="setting-group">
+                            <label class="setting-label">Автор</label>
+                            <input type="text" class="text-field" id="project-author" placeholder="Ваше имя">
                         </div>
 
-                        <div class="settings-group">
-                            <label class="settings-label">Версия сценария</label>
-                            <input type="text" class="settings-input" id="project-version" placeholder="1.0.0"
+                        <div class="setting-group">
+                            <label class="setting-label">Версия сценария</label>
+                            <input type="text" class="text-field" id="project-version" placeholder="1.0.0"
                                 value="1.0.0">
                         </div>
 
-                        <div class="settings-group">
-                            <label class="settings-label">Теги проекта</label>
-                            <input type="text" class="settings-input" id="project-tags"
+                        <div class="setting-group">
+                            <label class="setting-label">Теги проекта</label>
+                            <input type="text" class="text-field" id="project-tags"
                                 placeholder="драма, комедия, романтика">
                             <div class="settings-description">
                                 Ключевые слова для быстрого поиска и категоризации проекта
@@ -441,13 +421,13 @@
                         </div>
                     </div>
 
-                    <!-- Специальные возможности -->
-                    <div class="settings-tab-content" id="special-features">
-                        <h3>Специальные возможности</h3>
+                    <!-- Аддоны -->
+                    <div class="tab-content" id="addons">
+                        <h3>Аддоны</h3>
 
-                        <div class="settings-group">
-                            <label class="settings-label">CedR Colpic</label>
-                            <label class="settings-toggle-label">
+                        <div class="setting-group">
+                            <label class="setting-label">CedR Colpic</label>
+                            <label class="setting-toggle-label">
                                 <input type="checkbox" class="settings-toggle-input" id="cedr-colpic-toggle" checked>
                                 <span class="settings-toggle-slider"></span>
                                 Включено
@@ -460,216 +440,126 @@
                             </div>
                         </div>
                     </div>
-
                     <!-- Персонализация -->
-                    <div class="settings-tab-content" id="personalization">
+                    <div class="tab-content" id="personalization">
                         <h3>Персонализация</h3>
-                        <div class="settings-group">
-                            <label class="settings-label">Тема интерфейса</label>
-                            <select class="settings-select" id="theme-selector">
+                        <div class="setting-group">
+                            <label class="setting-label">Тема интерфейса</label>
+                            <select class="setting-select" id="theme-selector">
                                 <option value="light">Светлая</option>
                                 <option value="dark">Тёмная</option>
                             </select>
                         </div>
-                        <div class="settings-group">
-                            <label class="settings-label">Размер шрифта редактора</label>
-                            <input type="range" class="settings-range" id="font-size-range" min="12" max="24"
-                                value="16">
-                            <span class="settings-range-value">16px</span>
+                        <div class="setting-group">
+                            <label class="setting-label">Размер шрифта редактора</label>
+                            <input type="range" class="setting-range" id="editor-font-size" min="12" max="24" value="16">
+                            <span class="range-value">16px</span>
                         </div>
                     </div>
 
                     <!-- Параметры экспорта -->
-                    <div class="settings-tab-content" id="export">
+                    <div class="tab-content" id="export">
                         <h3>Параметры экспорта</h3>
-                        <div class="settings-group">
-                            <label class="settings-label">Формат сценария</label>
-                            <div class="settings-radio-group">
-                                <label class="settings-radio-label">
-                                    <input type="radio" name="export-format" value="european">
+                        <div class="setting-group">
+                            <label class="setting-label">Формат сценария</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="format" value="european">
                                     Европейский (двухколоночный)
                                 </label>
-                                <label class="settings-radio-label">
-                                    <input type="radio" name="export-format" value="american" checked>
+                                <label class="radio-label">
+                                    <input type="radio" name="format" value="american" checked>
                                     Американский (стандартный)
                                 </label>
                             </div>
                         </div>
-                        <div class="settings-group">
-                            <label class="settings-label">Скорость суфлёра (слов/мин)</label>
-                            <input type="number" class="settings-input" id="prompter-speed" value="120" min="60"
-                                max="300">
-                            <div class="settings-description">
-                                Скорость чтения текста в режиме суфлёра. Стандартная скорость - 120 слов в минуту
-                            </div>
+                        <div class="setting-group">
+                            <label class="setting-label">Скорость суфлёра (слов/мин)</label>
+                            <input type="number" class="setting-input" id="text-speed" value="120" min="60" max="300">
                         </div>
                     </div>
 
                     <!-- Редактор -->
-                    <div class="settings-tab-content" id="editor">
+                    <div class="tab-content" id="editor">
                         <h3>Редактор</h3>
-                        <div class="settings-group">
-                            <label class="settings-label">Автозавершение тегов</label>
-                            <label class="settings-toggle-label">
-                                <input type="checkbox" class="settings-toggle-input" id="auto-complete-toggle" checked>
-                                <span class="settings-toggle-slider"></span>
-                                Включено
-                            </label>
-                        </div>
-                        <div class="settings-group">
-                            <label class="settings-label">Подсветка синтаксиса</label>
-                            <label class="settings-toggle-label">
-                                <input type="checkbox" class="settings-toggle-input" id="syntax-highlight-toggle"
-                                    checked>
-                                <span class="settings-toggle-slider"></span>
-                                Включено
-                            </label>
-                        </div>
-                        <div class="settings-group">
-                            <label class="settings-label">Автосохранение каждые</label>
-                            <select class="settings-select" id="auto-save-interval">
-                                <option value="1">1 минуту</option>
-                                <option value="3">3 минуты</option>
-                                <option value="5" selected>5 минут</option>
-                                <option value="10">10 минут</option>
-                                <option value="15">15 минут</option>
+                        <div class="setting-group">
+                            <label class="setting-label">Автосохранение каждые</label>
+                            <select class="setting-select" id="auto-save-interval">
+                                <option>1 минуту</option>
+                                <option>3 минуты</option>
+                                <option selected>5 минут</option>
+                                <option>10 минут</option>
                             </select>
-                        </div>
-                        <div class="settings-group">
-                            <label class="settings-label">Линейка сцены</label>
-                            <label class="settings-toggle-label">
-                                <input type="checkbox" class="settings-toggle-input" id="scene-ruler-toggle" checked>
-                                <span class="settings-toggle-slider"></span>
-                                Включено
-                            </label>
-                            <div class="settings-description">
-                                Отображение временной шкалы для каждой сцены с расчётом хронометража
-                            </div>
                         </div>
                     </div>
 
                     <!-- Структура сценария -->
-                    <div class="settings-tab-content" id="scenario">
+                    <div class="tab-content" id="scenario">
                         <h3>Структура сценария</h3>
-                        <div class="settings-group">
-                            <label class="settings-label">Создавать основной контекст</label>
-                            <label class="settings-toggle-label">
-                                <input type="checkbox" class="settings-toggle-input" id="main-context-toggle" checked
-                                    disabled>
-                                <span class="settings-toggle-slider"></span>
+                        <div class="setting-group">
+                            <label class="setting-label">Создавать основной контекст</label>
+                            <label class="toggle-label">
+                                <input type="checkbox" class="toggle-input" id="create-main-context" checked>
+                                <span class="toggle-slider"></span>
                                 Включено
                             </label>
-                            <div class="settings-description">
+                            <div class="setting-description">
                                 Автоматически создавать структуру сцены при добавлении нового элемента
                             </div>
                         </div>
-                        <div class="settings-group">
-                            <label class="settings-label">Элементы сценария</label>
-                            <div class="settings-checkbox-group">
-                                <label class="settings-checkbox-label">
-                                    <input type="checkbox" checked> Сцена
-                                </label>
-                                <label class="settings-checkbox-label">
-                                    <input type="checkbox" checked> Действие
-                                </label>
-                                <label class="settings-checkbox-label">
-                                    <input type="checkbox" checked> Персонаж
-                                </label>
-                                <label class="settings-checkbox-label">
-                                    <input type="checkbox" checked> Ремарка
-                                </label>
-                                <label class="settings-checkbox-label">
-                                    <input type="checkbox"> Транзишн
-                                </label>
-                                <label class="settings-checkbox-label">
-                                    <input type="checkbox" checked> Диалог
-                                </label>
-                                <label class="settings-checkbox-label">
-                                    <input type="checkbox"> Кадр
-                                </label>
-                            </div>
-                        </div>
-                        <div class="settings-group">
-                            <label class="settings-label">Автоматическая нумерация сцен</label>
-                            <label class="settings-toggle-label">
-                                <input type="checkbox" class="settings-toggle-input" id="auto-numbering-toggle" checked>
-                                <span class="settings-toggle-slider"></span>
+                        <div class="setting-group">
+                            <label class="setting-label">Автоматическая нумерация сцен</label>
+                            <label class="toggle-label">
+                                <input type="checkbox" class="toggle-input" id="scene-autonumeration" checked>
+                                <span class="toggle-slider"></span>
                                 Включено
                             </label>
                         </div>
                     </div>
 
                     <!-- О версии -->
-                    <div class="settings-tab-content" id="about-version">
+                    <div class="tab-content" id="about-version">
                         <h3>О версии</h3>
-                        <div class="settings-version-info">
-                            <div class="settings-version-number">CedR SceneWriter v2.1.4</div>
-                            <div class="settings-build-date">Сборка от 31.10.2025</div>
-                            <div class="settings-license">Лицензия: MIT Open Source</div>
+                        <div class="version-info">
+                            <div class="version-number">CedR SceneWriter v2.1.4</div>
+                            <div class="build-date">Сборка от 31.10.2025</div>
                         </div>
-                        <div class="settings-group">
-                            <label class="settings-label">О проекте CedR</label>
-                            <div class="settings-description">
-                                CedR - это бесплатное и открытое приложение для написания сценариев, созданное с верой в
-                                то, что мощный инструмент для творчества должен быть доступен всем. Проект
-                                разрабатывается сообществом FXD.
-                            </div>
-                        </div>
-                        <div class="settings-changelog">
-                            <h4>Список изменений v2.1.4:</h4>
-                            <ul class="settings-changes-list">
-                                <li class="settings-change-item">
-                                    <span class="settings-change-type new">NEW</span>
+                        <div class="changelog">
+                            <h4>Список изменений:</h4>
+                            <ul class="changes-list">
+                                <li class="change-item">
+                                    <span class="change-type new">NEW</span>
                                     Добавлен двухколоночный европейский формат
                                 </li>
-                                <li class="settings-change-item">
-                                    <span class="settings-change-type new">NEW</span>
-                                    Реализована система CedR Colpic для подбора цветов
-                                </li>
-                                <li class="settings-change-item">
-                                    <span class="settings-change-type fix">FIX</span>
+                                <li class="change-item">
+                                    <span class="change-type fix">FIX</span>
                                     Исправлена ошибка автосохранения при больших файлах
                                 </li>
-                                <li class="settings-change-item">
-                                    <span class="settings-change-type improve">IMPROVE</span>
+                                <li class="change-item">
+                                    <span class="change-type improve">IMPROVE</span>
                                     Улучшена производительность редактора
                                 </li>
-                                <li class="settings-change-item">
-                                    <span class="settings-change-type new">NEW</span>
+                                <li class="change-item">
+                                    <span class="change-type new">NEW</span>
                                     Добавлена функция "Основной контекст"
                                 </li>
-                                <li class="settings-change-item">
-                                    <span class="settings-change-type fix">FIX</span>
+                                <li class="change-item">
+                                    <span class="change-type fix">FIX</span>
                                     Исправлены проблемы с кодировкой при экспорте
                                 </li>
-                                <li class="settings-change-item">
-                                    <span class="settings-change-type improve">IMPROVE</span>
+                                <li class="change-item">
+                                    <span class="change-type improve">IMPROVE</span>
                                     Обновлены шрифты интерфейса
                                 </li>
                             </ul>
-                        </div>
-                        <div class="settings-group">
-                            <label class="settings-label">Контакты и поддержка</label>
-                            <div class="settings-description">
-                                • GitHub: github.com/cedr-project<br>
-                                • Сообщество: community.cedr.dev<br>
-                                • Email: support@cedr.dev
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Кнопки действий -->
-            <div class="settings-actions">
-                <button class="settings-save-btn">
-                    <span class="btn-icon">💾</span>
-                    Сохранить настройки
-                </button>
-                <button class="settings-cancel-btn">
-                    <span class="btn-icon">↶</span>
-                    Отменить изменения
-                </button>
+            <div class="settings-actions-outer">
+                <button class="settings-save-btn" id="applySettx">Сохранить настройки</button>
             </div>
         </div>
     </div>

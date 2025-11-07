@@ -14,7 +14,6 @@
     --bg-secondary: linear-gradient(135deg, #e6e9f0 0%, #c8ccd8 100%);
     --bg-panel: rgba(255, 255, 255, 0.95);
     --bg-panel-hover: rgba(255, 255, 255, 0.98);
-    --bg-header: linear-gradient(135deg, #e6e9f0 0%, #c8ccd8 100%);
     --bg-toolbar: rgba(255, 255, 255, 0.9);
     --bg-element: rgba(255, 255, 255, 0.85);
     --bg-hover: rgba(59, 130, 246, 0.05);
@@ -45,7 +44,6 @@
     --bg-secondary: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
     --bg-panel: rgba(50, 50, 50, 0.95);
     --bg-panel-hover: rgba(60, 60, 60, 0.98);
-    --bg-header: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
     --bg-toolbar: rgba(60, 60, 60, 0.9);
     --bg-element: rgba(70, 70, 70, 0.85);
     --bg-hover: rgba(96, 165, 250, 0.1);
@@ -90,7 +88,7 @@ body {
 
 /* HEADER С ЗАКРУГЛЕНИЯМИ И ТЕНЯМИ */
 .app-header {
-    background: var(--bg-header);
+    background: var(--bg-panel);
     border-radius: 12px;
     padding: 12px 24px;
     display: flex;
@@ -103,6 +101,7 @@ body {
 }
 
 .app-header:hover {
+    background: var(--bg-panel-hover);
     box-shadow: var(--shadow-large);
     transform: translateY(-2px);
 }
@@ -128,7 +127,6 @@ body {
     font-weight: 500;
 }
 
-/* КНОПКИ HEADER В СТИЛЕ START */
 .header-buttons-container {
     display: flex;
     background: transparent;
@@ -158,6 +156,8 @@ body {
 
 .header-button:active {
     transform: translateY(0);
+    background-color: var(--bg-selected);
+    box-shadow: var(--glow-blue);
 }
 
 .header-button.active {
@@ -293,7 +293,6 @@ body {
     border-bottom: 1px solid var(--border-light);
 }
 
-/* ОБНОВЛЁННАЯ ИЕРАРХИЯ - СЦЕНЫ И КОНТЕКСТЫ ВМЕСТЕ */
 .hierarchy-item {
     display: flex;
     align-items: center;
@@ -664,7 +663,6 @@ body {
     font-family: inherit;
 }
 
-/* ЦВЕТОВЫЕ ИНПУТЫ В СТИЛЕ START */
 .color-picker {
     display: flex;
     gap: 10px;
@@ -694,7 +692,6 @@ body {
     padding: 0;
 }
 
-/* РЕСАЙЗ РУЧКИ С УЛУЧШЕННЫМ СТИЛЕМ */
 .resize-handle {
     position: absolute;
     top: 0;
@@ -736,7 +733,6 @@ body {
     opacity: 1;
 }
 
-/* СКРОЛЛБАРЫ В СТИЛЕ START */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -787,7 +783,6 @@ body {
         padding: 0 16px;
     }
 }
-/* ДОБАВЛЯЕМ В КОНЕЦ ФАЙЛА */
 
 /* СТИЛИ ДЛЯ СВОРАЧИВАНИЯ ИЕРАРХИИ */
 .hierarchy-item.context-item {

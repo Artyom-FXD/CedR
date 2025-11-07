@@ -287,130 +287,16 @@ def update_project_timestamp():
         return jsonify({"error": f"Внутренняя ошибка сервера: {str(e)}"}), 500
 
 # EDITOR ----------------------------------------------------------------------
-@app.route('/api/projects/load')
-def load_project():
-    try:
-        project_name = request.args.get('name')
-        if not project_name:
-            return jsonify({"error": "Имя проекта не указано"}), 400
-        
-        filename = f"projects/{project_name}.crs"
-        if not os.path.exists(filename):
-            return jsonify({"error": "Проект не найден"}), 404
-        
-        with open(filename, 'r', encoding='utf-8') as f:
-            project_data = json.load(f)
-        
-        # Обновляем структуру старых проектов до новой версии
-        project_data = update_project_structure(project_data)
-        
-        return jsonify(project_data)
-        
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/projects/save', methods=['POST'])
-def save_project():
-    try:
-        data = request.get_json()
-        project_name = data.get('name')
-        project_data = data.get('data')
-        
-        if not project_name or not project_data:
-            return jsonify({"error": "Неверные данные"}), 400
-        
-        # Загружаем существующий проект
-        filename = f"projects/{project_name}.crs"
-        if os.path.exists(filename):
-            with open(filename, 'r', encoding='utf-8') as f:
-                existing_data = json.load(f)
-        else:
-            existing_data = create_empty_project_data(project_name, "")
-        
-        # Обновляем данные сцены
-        existing_data.update(project_data)
-        existing_data['updated_at'] = datetime.now().isoformat()
-        
-        # Сохраняем обратно
-        with open(filename, 'w', encoding='utf-8') as f:
-            json.dump(existing_data, f, indent=2, ensure_ascii=False)
-        
-        return jsonify({"status": "success", "message": "Проект сохранен"})
-        
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/projects/open', methods=['POST'])
-def open_project():
-    try:
-        data = request.get_json()
-        project_name = data.get('name')
-        
-        # Проверяем существование проекта
-        filename = f"projects/{project_name}.crs"
-        if not os.path.exists(filename):
-            return jsonify({"error": "Проект не найден"}), 404
-            
-        # Обновляем время последнего открытия
-        return jsonify({
-            "status": "success", 
-            "redirect": f"/editor?project={project_name}"
-        })
-        
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-def update_project_structure(project_data):
-    # Если проект уже в новой структуре, возвращаем как есть
-    if 'content' in project_data and isinstance(project_data['content'], list):
-        return project_data
-    
-    # Миграция старых проектов
-    updated_data = {
-        "name": project_data.get("name", "Без названия"),
-        "description": project_data.get("description", ""),
-        "created_at": project_data.get("created_at", datetime.now().isoformat()),
-        "updated_at": project_data.get("updated_at", datetime.now().isoformat()),
-        "content": [],
-        "settings": project_data.get("settings", {})
+@app.route('/cur-project/get-all')
+def get_served_project():
+    tr = {
+        "name": project.current_project.name,
+        "desc": project.current_project.description,
+        "storyline": project.storyline,
+        "characters": project.characters,
+        "settings": project.current_project.settings
     }
-    
-    # Переносим существующие данные в новую структуру
-    if 'scenes' in project_data:
-        for scene in project_data.get('scenes', []):
-            updated_data['content'].append({
-                "type": "scene",
-                "id": scene.get('id', f"scene-{int(time.time())}"),
-                "name": scene.get('name', 'Новая сцена'),
-                "description": scene.get('description', ''),
-                "content": scene.get('content', [])
-            })
-    
-    if 'characters' in project_data:
-        for character in project_data.get('characters', []):
-            updated_data['content'].append({
-                "type": "character",
-                "id": character.get('id', f"character-{int(time.time())}"),
-                "name": character.get('name', 'Новый персонаж'),
-                "description": character.get('description', ''),
-                "colors": character.get('colors', ['#3b82f6', '#60a5fa', '#93c5fd']),
-                "gender": character.get('gender', 'unknown')
-            })
-    
-    # Если ничего не было, добавляем пустую структуру
-    if not updated_data['content']:
-        updated_data['content'] = [
-            {
-                "type": "character",
-                "id": f"character-{int(time.time())}-1",
-                "name": "Новый персонаж",
-                "description": "Описание персонажа",
-                "colors": ["#3b82f6", "#60a5fa", "#93c5fd"],
-                "gender": "unknown"
-            }
-        ]
-    
-    return updated_data
+    return jsonify(tr)
 
 # Статические файлы
 @app.route('/<path:filename>')

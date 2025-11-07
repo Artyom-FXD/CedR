@@ -5,56 +5,13 @@ class EditorUI {
     }
 
     init() {
-        this.initSettingsModal();
         this.initSettingsTabs();
         this.initHierarchy();
         this.initResizeHandles();
-        this.initModeSwitcher();
         this.initKeyboardShortcuts();
         this.updateStatistics();
         
         console.log('Editor UI initialized');
-    }
-
-    // 1. Управление модальным окном настроек
-    initSettingsModal() {
-        const openBtn = document.getElementById('openSettingsBtn');
-        const modal = document.getElementById('settings-modal');
-        const cancelBtn = document.querySelector('.settings-cancel-btn');
-        
-        if (openBtn && modal) {
-            openBtn.addEventListener('click', () => modal.classList.add('active'));
-            
-            if (cancelBtn) {
-                cancelBtn.addEventListener('click', () => modal.classList.remove('active'));
-            }
-            
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.classList.remove('active');
-            });
-        }
-    }
-
-    // 2. Переключение вкладок настроек
-    initSettingsTabs() {
-        const tabs = document.querySelectorAll('.settings-tab');
-        const contents = document.querySelectorAll('.settings-tab-content');
-        
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const tabId = tab.getAttribute('data-tab');
-                
-                // Обновляем активные элементы
-                tabs.forEach(t => t.classList.remove('active'));
-                contents.forEach(c => c.classList.remove('active'));
-                
-                tab.classList.add('active');
-                const targetContent = document.getElementById(tabId);
-                if (targetContent) {
-                    targetContent.classList.add('active');
-                }
-            });
-        });
     }
 
     // 3. Управление иерархией проекта
@@ -385,4 +342,299 @@ async function loadProjectFromURL() {
 function renderProject(projectData) {
     console.log('Rendering project:', projectData);
     // Здесь будет логика отображения проекта в интерфейсе
+}
+const openSettingsBtn = document.getElementById('openSettingsBtn')
+const settingsOverlay = document.getElementById('settings-overlay')
+openSettingsBtn.addEventListener('click', () => {
+    settingsOverlay.style.display = 'flex';
+});
+settingsOverlay.addEventListener('click', (e) => {
+    if (e.target === settingsOverlay) {
+        settingsOverlay.style.display = 'none';
+    }
+});
+// Переключение вкладок настроек
+const tabBtns = document.querySelectorAll('.tab-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+
+tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Убираем активный класс у всех кнопок и контента
+        tabBtns.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+
+        // Добавляем активный класс текущей кнопке
+        btn.classList.add('active');
+
+        // Показываем соответствующий контент
+        const tabId = btn.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+    });
+});
+class QuickSettings {
+    constructor() {
+        this.settings = {};
+        this.saveTimeout = null;
+    }
+
+    // Загрузка всех настроек
+    async loadAll() {
+        try {
+            const resp = await fetch('/api/settings');
+            this.settings = await resp.json();
+            this.applyToUI();
+            console.log('Настройки загружены');
+        } catch (error) {
+            console.error('Ошибка загрузки:', error);
+            this.settings = this.getDefaultSettings();
+        }
+    }
+
+    // Быстрое сохранение всех настроек
+    async saveAll() {
+        try {
+            this.collectFromUI();
+            await fetch('/api/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(this.settings)
+            });
+            console.log('Настройки сохранены');
+            this.showNotice('Настройки сохранены');
+        } catch (error) {
+            console.error('Ошибка сохранения:', error);
+            this.showNotice('Ошибка сохранения', 'error');
+        }
+    }
+
+    // Получить значение настройки
+    get(key) {
+        const keys = key.split('.');
+        let value = this.settings;
+        for (const k of keys) {
+            value = value?.[k];
+        }
+        return value;
+    }
+
+    // Установить значение настройки
+    set(key, value) {
+        const keys = key.split('.');
+        let obj = this.settings;
+
+        for (let i = 0; i < keys.length - 1; i++) {
+            if (!obj[keys[i]]) obj[keys[i]] = {};
+            obj = obj[keys[i]];
+        }
+
+        obj[keys[keys.length - 1]] = value;
+        this.applyToUI();
+        this.debouncedSave();
+    }
+
+    // Применить настройки к UI
+    applyToUI() {
+        // Тема
+        const theme = this.get('personalisation.theme') || 'light';
+        document.body.className = theme + '-theme';
+        this.setValue('#theme-selector', theme);
+
+        // Размер шрифта
+        this.setValue('#editor-font-size', this.get('personalisation.editorFontSize') || 16);
+        this.updateText('.range-value', this.get('personalisation.editorFontSize') + 'px');
+
+        // Формат экспорта
+        this.setRadio('input[name="format"]', this.get('exportParameters.format') || 'american');
+
+        // Скорость текста
+        this.setValue('#text-speed', this.get('exportParameters.textSpeed') || 120);
+
+        // Автосохранение
+        this.setValue('#auto-save-interval', this.get('editor.autosaves') || 5);
+
+        // Структура
+        this.setChecked('#create-main-context', this.get('structure.createMainContext') !== false);
+        this.setChecked('#scene-autonumeration', this.get('structure.sceneAutonumeration') !== false);
+    }
+
+    // Собрать настройки с UI
+    collectFromUI() {
+        this.settings = {
+            personalisation: {
+                theme: this.getValue('#theme-selector') || 'light',
+                editorFontSize: parseInt(this.getValue('#editor-font-size')) || 16
+            },
+            exportParameters: {
+                format: this.getRadioValue('input[name="format"]') || 'american',
+                textSpeed: parseInt(this.getValue('#text-speed')) || 120
+            },
+            editor: {
+                autosaves: parseInt(this.getValue('#auto-save-interval')) || 5
+            },
+            structure: {
+                createMainContext: this.getChecked('#create-main-context'),
+                sceneAutonumeration: this.getChecked('#scene-autonumeration')
+            }
+        };
+    }
+
+    // Настройки по умолчанию
+    getDefaultSettings() {
+        return {
+            personalisation: { theme: 'light', editorFontSize: 16 },
+            exportParameters: { format: 'american', textSpeed: 120 },
+            editor: { autosaves: 5 },
+            structure: { createMainContext: true, sceneAutonumeration: true }
+        };
+    }
+
+    // Вспомогательные методы для работы с DOM
+    setValue(selector, value) {
+        const el = document.querySelector(selector);
+        if (el) el.value = value;
+    }
+
+    getValue(selector) {
+        const el = document.querySelector(selector);
+        return el ? el.value : null;
+    }
+
+    setChecked(selector, checked) {
+        const el = document.querySelector(selector);
+        if (el) el.checked = checked;
+    }
+
+    getChecked(selector) {
+        const el = document.querySelector(selector);
+        return el ? el.checked : false;
+    }
+
+    setRadio(name, value) {
+        const radios = document.querySelectorAll(name);
+        radios.forEach(radio => {
+            radio.checked = (radio.value === value);
+        });
+    }
+
+    getRadioValue(name) {
+        const radio = document.querySelector(`${name}:checked`);
+        return radio ? radio.value : null;
+    }
+
+    updateText(selector, text) {
+        const el = document.querySelector(selector);
+        if (el) el.textContent = text;
+    }
+
+    // Отложенное сохранение
+    debouncedSave() {
+        clearTimeout(this.saveTimeout);
+        this.saveTimeout = setTimeout(() => this.saveAll(), 500);
+    }
+
+    // Уведомление
+    showNotice(message, type = 'success') {
+        const notice = document.createElement('div');
+        notice.textContent = message;
+        notice.style.cssText = `
+            position: fixed; top: 20px; right: 20px; padding: 10px 15px;
+            background: ${type === 'error' ? '#ef4444' : '#10b981'};
+            color: white; border-radius: 5px; z-index: 10000;
+        `;
+        document.body.appendChild(notice);
+        setTimeout(() => notice.remove(), 2000);
+    }
+}
+
+// Создаем глобальный экземпляр
+window.settings = new QuickSettings();
+// Автоматическая инициализация при загрузке
+document.addEventListener('DOMContentLoaded', () => {
+    // Загружаем настройки
+    window.settings.loadAll();
+
+    // Вешаем обработчики на все элементы настроек
+    const settingElements = [
+        '#theme-selector',
+        '#editor-font-size',
+        '#text-speed',
+        '#auto-save-interval',
+        '#create-main-context',
+        '#scene-autonumeration',
+        'input[name="format"]'
+    ];
+
+    settingElements.forEach(selector => {
+        document.querySelectorAll(selector).forEach(el => {
+            el.addEventListener('change', () => window.settings.saveAll());
+        });
+    });
+
+    // Особый обработчик для ползунка размера шрифта
+    const fontSizeSlider = document.querySelector('#editor-font-size');
+    const rangeValue = document.querySelector('.range-value');
+
+    if (fontSizeSlider && rangeValue) {
+        fontSizeSlider.addEventListener('input', () => {
+            rangeValue.textContent = fontSizeSlider.value + 'px';
+            window.settings.saveAll();
+        });
+    }
+
+    // Обработчики для кнопок в модалке настроек
+    const saveBtn = document.querySelector('.settings-save-btn');
+    const cancelBtn = document.querySelector('.settings-cancel-btn');
+
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => window.settings.saveAll());
+    }
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => window.settings.loadAll());
+    }
+});
+
+themeSelector.addEventListener('change', async () => {
+    const selectedTheme = themeSelector.value;
+    document.body.className = selectedTheme + '-theme';
+
+    await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ theme: theme })
+    });
+});
+// Функция уведомления
+function showNotification(message, type = 'success') {
+    // Удаляем существующие уведомления
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(notification => notification.remove());
+    
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.className = 'notification';
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        background: ${type === 'success' ? '#10b981' : '#ef4444'};
+        color: white;
+        border-radius: 8px;
+        z-index: 10000;
+        font-weight: 500;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        animation: slideInRight 0.3s ease-out;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease-in';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 300);
+    }, 3000);
 }

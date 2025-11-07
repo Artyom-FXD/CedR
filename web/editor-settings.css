@@ -1,5 +1,189 @@
-/* settings.css - Стили для модального окна настроек */
-.settings-modal-overlay {
+@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* СВЕТЛАЯ ТЕМА (по умолчанию) */
+.light-theme {
+    --bg-primary: linear-gradient(135deg, #8b8b8b 0%, #5a5b5d 100%);
+    --bg-primary-hover: linear-gradient(135deg, #b4c2a1 0%, #5f7051 100%);
+    --bg-secondary: linear-gradient(135deg, #e6e9f0 0%, #c8ccd8 100%);
+    --bg-modal: linear-gradient(135deg, #e6e9f0cc 0%, #c8ccd8cb 100%);
+    --bg-card: rgba(255, 255, 255, 0.9);
+    --bg-card-hover: rgba(255, 255, 255, 0.95);
+    --text-primary: #2d2d2d;
+    --text-secondary: #666;
+    --text-light: rgba(255, 255, 255, 0.9);
+    --text-muted: rgba(255, 255, 255, 0.7);
+    --accent-blue: #3b82f6;
+    --accent-green: #10b981;
+    --accent-yellow: #eab308;
+    --accent-red: #ef4444;
+    --border-light: rgba(0, 0, 0, 0.1);
+    --shadow-light: rgba(0, 0, 0, 0.15);
+    --shadow-medium: rgba(0, 0, 0, 0.25);
+    --shadow-heavy: rgba(0, 0, 0, 0.3);
+}
+
+/* ТЁМНАЯ ТЕМА */
+.dark-theme {
+    --bg-primary: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+    --bg-primary-hover: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+    --bg-secondary: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
+    --bg-modal: linear-gradient(135deg, #3a3a3acc 0%, #2d2d2dcb 100%);
+    --bg-card: rgba(50, 50, 50, 0.9);
+    --bg-card-hover: rgba(60, 60, 60, 0.95);
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --text-light: rgba(255, 255, 255, 0.9);
+    --text-muted: rgba(255, 255, 255, 0.6);
+    --accent-blue: #60a5fa;
+    --accent-green: #34d399;
+    --accent-yellow: #fbbf24;
+    --accent-red: #f87171;
+    --border-light: rgba(255, 255, 255, 0.1);
+    --shadow-light: rgba(0, 0, 0, 0.3);
+    --shadow-medium: rgba(0, 0, 0, 0.5);
+    --shadow-heavy: rgba(0, 0, 0, 0.7);
+}
+
+
+h1 {
+    font-size: 48px;
+    color: var(--text-primary);
+    margin-bottom: 40px;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Список проектов */
+.projects-list {
+    list-style: none;
+    flex: 1;
+    margin-bottom: 40px;
+    width: 100%;
+    overflow: auto;
+}
+
+.project {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+    padding: 25px 30px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-light);
+}
+
+.project:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.prj-title {
+    font-size: 24px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.prj-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.prj-action {
+    background: transparent;
+    color: var(--text-primary);
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    position: relative;
+}
+
+/* Уникальные цвета для кнопок редактировать и удалить */
+.prj-action:nth-child(1):hover {
+    color: var(--accent-yellow);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(234, 179, 8, 0.3);
+}
+
+.prj-action:nth-child(1):active {
+    transform: translateY(0);
+    color: #ca8a04;
+    box-shadow: 0 2px 6px rgba(236, 146, 11, 0.2);
+}
+
+.prj-action:nth-child(2):hover {
+    color: var(--accent-red);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.prj-action:nth-child(2):active {
+    transform: translateY(0);
+    color: #dc2626;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.2);
+}
+
+/* Кнопки приложения */
+.app-buttons {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+}
+
+.app-button {
+    background: transparent;
+    color: var(--text-primary);
+    border: none;
+    padding: 15px 30px;
+    border-radius: 12px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 180px;
+    border: 1px solid transparent;
+    position: relative;
+}
+
+.app-button:hover {
+    color: var(--accent-blue);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+}
+
+.app-button:active {
+    transform: translateY(0);
+    color: #1d4ed8;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+/* Состояния нажатия для всех кнопок */
+.prj-action:active,
+.app-button:active {
+    transition: all 0.1s;
+}
+
+/* Эффект "вдавленности" при нажатии */
+.prj-action:active::after,
+.app-button:active::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border-radius: inherit;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* СТИЛИ МОДАЛЬНОГО ОКНА */
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -7,389 +191,25 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(20px);
-    display: none;
     justify-content: center;
     align-items: center;
-    z-index: 10000;
+    z-index: 1000;
     animation: fadeIn 0.3s ease;
 }
 
-.settings-modal-overlay.active {
-    display: flex;
-}
-
-.settings-window {
-    background: var(--bg-panel);
-    border-radius: 20px;
-    width: 900px;
-    max-height: 85vh;
-    box-shadow: var(--shadow-large);
-    border: 1px solid var(--border-light);
-    animation: slideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    display: flex;
-    flex-direction: column;
-}
-
-.settings-container {
-    display: flex;
-    flex: 1;
-    gap: 0;
-    min-height: 500px;
-}
-
-/* Левая панель с вкладками */
-.settings-tabs {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    width: 250px;
-    flex-shrink: 0;
-    background: var(--bg-toolbar);
-    border-radius: 20px 0 0 0;
-    padding: 20px 0;
-}
-
-.settings-tab {
-    background: transparent;
-    color: var(--text-secondary);
-    border: none;
-    padding: 16px 24px;
-    text-align: left;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 15px;
-    position: relative;
-    border-right: 3px solid transparent;
-}
-
-.settings-tab:hover {
-    color: var(--accent-blue);
-    background: var(--bg-hover);
-    transform: translateX(5px);
-}
-
-.settings-tab.active {
-    color: var(--accent-blue);
-    background: var(--bg-selected);
-    border-right-color: var(--accent-blue);
-    font-weight: 500;
-}
-
-.settings-tab.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 20px;
-    background: var(--accent-blue);
-    border-radius: 0 2px 2px 0;
-}
-
-/* Правая панель с контентом */
-.settings-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 30px;
-}
-
-.settings-tab-content {
-    display: none;
-    animation: fadeIn 0.3s ease;
-}
-
-.settings-tab-content.active {
-    display: flex;
-    flex-direction: column;
-}
-
-.settings-tab-content h3 {
-    font-size: 24px;
-    color: var(--text-primary);
-    margin-bottom: 25px;
-    font-weight: 600;
-    padding-bottom: 15px;
-    border-bottom: 2px solid var(--border-light);
-}
-
-/* Группы настроек */
-.settings-group {
-    margin-bottom: 30px;
-    padding: 20px;
-    background: var(--bg-element);
-    border-radius: 12px;
-    border: 1px solid var(--border-light);
-    transition: all 0.3s ease;
-}
-
-.settings-group:hover {
-    border-color: var(--border-medium);
-    box-shadow: var(--shadow-light);
-}
-
-.settings-label {
-    display: block;
-    font-size: 16px;
-    color: var(--text-primary);
-    margin-bottom: 12px;
-    font-weight: 500;
-}
-
-.settings-description {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin-top: 8px;
-    line-height: 1.5;
-    font-style: italic;
-}
-
-.settings-select,
-.settings-input,
-.settings-textarea {
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid var(--border-light);
-    border-radius: 8px;
-    font-size: 15px;
-    background: var(--bg-panel);
-    transition: all 0.3s ease;
-    font-family: 'Jost', sans-serif;
-    color: var(--text-primary);
-}
-
-.settings-textarea {
-    resize: vertical;
-    min-height: 100px;
-}
-
-.settings-select:focus,
-.settings-input:focus,
-.settings-textarea:focus {
-    outline: none;
-    border-color: var(--accent-blue);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    transform: translateY(-2px);
-}
-
-/* Радио кнопки и чекбоксы */
-.settings-radio-group,
-.settings-checkbox-group {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.settings-radio-label,
-.settings-checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 15px;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: color 0.3s ease;
-    padding: 8px 0;
-}
-
-.settings-radio-label:hover,
-.settings-checkbox-label:hover {
-    color: var(--accent-blue);
-}
-
-.settings-radio-label input,
-.settings-checkbox-label input {
-    width: 18px;
-    height: 18px;
-}
-
-/* Range слайдер */
-.settings-range {
-    width: 100%;
-    margin: 15px 0;
-}
-
-.settings-range-value {
-    display: inline-block;
-    margin-left: 15px;
-    font-size: 14px;
-    color: var(--accent-blue);
-    font-weight: 500;
-}
-
-/* Toggle переключатели */
-.settings-toggle-label {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    font-size: 15px;
-    color: var(--text-primary);
-}
-
-.settings-toggle-input {
-    display: none;
-}
-
-.settings-toggle-slider {
-    width: 50px;
-    height: 26px;
-    background: var(--border-light);
-    border-radius: 13px;
-    position: relative;
-    transition: all 0.3s ease;
-}
-
-.settings-toggle-slider::before {
-    content: '';
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background: white;
-    border-radius: 50%;
-    top: 3px;
-    left: 3px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.settings-toggle-input:checked + .settings-toggle-slider {
-    background: var(--accent-blue);
-}
-
-.settings-toggle-input:checked + .settings-toggle-slider::before {
-    transform: translateX(24px);
-}
-
-/* Кнопки действий */
-.settings-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    padding: 25px 30px;
-    border-top: 2px solid var(--border-light);
-    margin-top: auto;
-}
-
-.settings-save-btn,
-.settings-cancel-btn {
-    padding: 14px 35px;
-    border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    font-weight: 500;
-    min-width: 160px;
-}
-
-.settings-save-btn {
-    background: transparent;
-    color: var(--accent-green);
-    border: 2px solid var(--accent-green);
-}
-
-.settings-save-btn:hover {
-    background: var(--accent-green);
-    color: white;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-}
-
-.settings-cancel-btn {
-    background: transparent;
-    color: var(--accent-red);
-    border: 2px solid var(--accent-red);
-}
-
-.settings-cancel-btn:hover {
-    background: var(--accent-red);
-    color: white;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
-}
-
-/* Стили для вкладки "О версии" */
-.settings-version-info {
-    background: var(--bg-element);
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 25px;
-    border: 1px solid var(--border-light);
-}
-
-.settings-version-number {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--accent-blue);
-    margin-bottom: 5px;
-}
-
-.settings-build-date {
-    font-size: 14px;
-    color: var(--text-secondary);
-}
-
-.settings-changelog {
-    background: var(--bg-element);
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 25px;
-    border: 1px solid var(--border-light);
-}
-
-.settings-changelog h4 {
-    font-size: 18px;
-    color: var(--text-primary);
-    margin-bottom: 15px;
-    font-weight: 500;
-}
-
-.settings-changes-list {
-    list-style: none;
-    padding: 0;
-}
-
-.settings-change-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border-light);
-}
-
-.settings-change-item:last-child {
-    border-bottom: none;
-}
-
-.settings-change-type {
-    padding: 3px 10px;
-    border-radius: 5px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.settings-change-type.new {
-    background: var(--accent-green);
-    color: white;
-}
-
-.settings-change-type.fix {
-    background: var(--accent-red);
-    color: white;
-}
-
-.settings-change-type.improve {
-    background: var(--accent-blue);
-    color: white;
-}
-
-/* Анимации */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+
+.create-prj-window {
+    background: var(--bg-modal);
+    border-radius: 20px;
+    padding: 40px;
+    width: 500px;
+    box-shadow: 0 15px 40px var(--shadow-heavy);
+    border: 1px solid var(--border-light);
+    animation: slideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 @keyframes slideUp {
@@ -403,114 +223,168 @@
     }
 }
 
-/* Скроллбары */
-.settings-content::-webkit-scrollbar {
-    width: 8px;
-}
-
-.settings-content::-webkit-scrollbar-track {
-    background: var(--border-light);
-    border-radius: 4px;
-}
-
-.settings-content::-webkit-scrollbar-thumb {
-    background: var(--border-medium);
-    border-radius: 4px;
-}
-
-.settings-content::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-blue);
-}
-
-/* Адаптивность */
-@media (max-width: 968px) {
-    .settings-window {
-        width: 95%;
-        margin: 20px;
-    }
-    
-    .settings-container {
-        flex-direction: column;
-    }
-    
-    .settings-tabs {
-        width: 100%;
-        flex-direction: row;
-        overflow-x: auto;
-        padding: 15px;
-        border-radius: 20px 20px 0 0;
-    }
-    
-    .settings-tab {
-        white-space: nowrap;
-        border-right: none;
-        border-bottom: 3px solid transparent;
-        text-align: center;
-        flex: 1;
-        min-width: 120px;
-    }
-    
-    .settings-tab.active::before {
-        display: none;
-    }
-    
-    .settings-tab.active {
-        border-right-color: transparent;
-        border-bottom-color: var(--accent-blue);
-    }
-}
-
-@media (max-width: 768px) {
-    .settings-content {
-        padding: 20px;
-    }
-    
-    .settings-actions {
-        flex-direction: column;
-        padding: 20px;
-    }
-    
-    .settings-save-btn,
-    .settings-cancel-btn {
-        min-width: auto;
-        width: 100%;
-    }
-}
-
-/* Добавляем в settings.css */
-
-.settings-tab {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.tab-icon {
-    font-size: 16px;
-    width: 20px;
+.create-prj-window h5 {
+    font-size: 32px;
+    color: var(--text-primary);
     text-align: center;
+    margin-bottom: 30px;
+    font-weight: 500;
 }
 
-.settings-save-btn,
-.settings-cancel-btn {
+.input-group {
+    margin-bottom: 25px;
+}
+
+.project-name,
+.project-description {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid var(--border-light);
+    border-radius: 10px;
+    font-size: 18px;
+    background: var(--bg-card);
+    transition: all 0.3s ease;
+    font-family: 'Jost', sans-serif;
+    resize: none;
+    color: var(--text-primary);
+}
+
+.project-name:focus,
+.project-description:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    transform: translateY(-2px);
+}
+
+.project-description {
+    min-height: 120px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.form-actions {
     display: flex;
-    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.create-btn {
+    background: transparent;
+    color: var(--text-primary);
+    border: none;
+    padding: 15px 40px;
+    border-radius: 12px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    border: 1px solid transparent;
+}
+
+.create-btn:hover {
+    color: var(--accent-green);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+}
+
+.create-btn:active {
+    transform: translateY(0);
+    color: #059669;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+}
+
+.create-btn:active::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border-radius: inherit;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* СТИЛИ ОКНА НАСТРОЕК */
+.settings-window {
+    background: var(--bg-modal);
+    border-radius: 20px;
+    padding: 30px;
+    width: 900px;
+    max-height: 85vh;
+    box-shadow: 0 15px 40px var(--shadow-heavy);
+    border: 1px solid var(--border-light);
+    animation: slideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-container {
+    display: flex;
+    flex: 1;
+    gap: 30px;
+    min-height: 500px;
+    margin-bottom: 20px;
+}
+
+/* Левая панель с вкладками */
+.settings-tabs {
+    display: flex;
+    flex-direction: column;
     gap: 8px;
+    width: 250px;
+    flex-shrink: 0;
 }
 
-.btn-icon {
+.tab-btn {
+    background: transparent;
+    color: var(--text-primary);
+    border: none;
+    padding: 15px 20px;
+    border-radius: 10px;
     font-size: 16px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
 }
 
-/* Улучшаем внешний вид специальных возможностей */
-.settings-group strong {
+.tab-btn:hover {
+    background: var(--bg-card);
+    transform: translateX(5px);
+    box-shadow: 0 3px 10px rgba(59, 130, 246, 0.2);
+}
+
+.tab-btn.active {
+    background: var(--bg-card);
     color: var(--accent-blue);
-    font-weight: 600;
+    box-shadow: 0 3px 15px rgba(59, 130, 246, 0.3);
+    border-color: rgba(59, 130, 246, 0.3);
 }
 
-.settings-description {
-    line-height: 1.6;
+/* Правая панель с контентом */
+.settings-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 10px;
 }
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content h3 {
+    font-size: 24px;
+    color: var(--text-primary);
+    margin-bottom: 25px;
+    font-weight: 500;
+}
+
 /* Группы настроек */
 .setting-group {
     margin-bottom: 25px;
@@ -765,4 +639,90 @@
 .change-type.improve {
     background: var(--accent-blue);
     color: white;
+}
+
+.text-field {
+    border-radius: 4px;
+    width: 100%;
+    padding: 2px;
+    border: 2px;
+    max-width: 100%;
+    min-width: 100%;
+    min-height: 1em;
+}
+
+/* Скроллбары */
+.settings-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.settings-content::-webkit-scrollbar-track {
+    background: var(--border-light);
+    border-radius: 3px;
+}
+
+.settings-content::-webkit-scrollbar-thumb {
+    background: var(--accent-blue);
+    border-radius: 3px;
+}
+
+.settings-content::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-blue);
+    opacity: 0.8;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .about-window,
+    .settings-window {
+        width: 95%;
+        padding: 25px;
+        margin: 20px;
+    }
+    
+    .about-features {
+        grid-template-columns: 1fr;
+    }
+    
+    .about-header h3 {
+        font-size: 26px;
+    }
+    
+    .mission-paragraph {
+        font-size: 15px;
+    }
+    
+    .settings-container {
+        flex-direction: column;
+    }
+    
+    .settings-tabs {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+    }
+    
+    .tab-btn {
+        white-space: nowrap;
+    }
+}
+
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .project {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .prj-actions {
+        align-self: stretch;
+        justify-content: space-between;
+    }
+    
+    .prj-action {
+        flex: 1;
+        text-align: center;
+    }
 }
